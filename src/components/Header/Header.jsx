@@ -1,24 +1,27 @@
 import React from 'react'
-// import './Header.module.scss';  // просто импортируете файл
-import {styles} from './Header.module.scss';
-import logo from '../../assets/images/logo.png';
+// import global_styles from '../../styles/global.scss';
+import styles from './Header.module.scss'
+import logo from '../../assets/images/logo.png'
 
 const Header = () => {
 	return (
-		<div className={styles.container}>
-			<header className="header">
-				<div className='header__wrapper'>
-					<div className='header__logo-wrapper'>
-						<img src={logo} alt='logo' className='header__logo' />
+		<header className={styles.header}>
+			<div className='container'>
+				<div className={styles.wrapper}>
+					<div className={styles.logo_wrapper}>
+						<img src={logo} alt='logo' className={styles.logo} />
 					</div>
-					<h1>Подбор квартир</h1>
-					<nav className='header__nav'>
-						<a href='/'>Главная</a>
-						<a href='/profile'>Профиль</a>
+					<nav className={styles.nav}>
+						<a href='/registration' className={`btn ${styles.nav_btn}`}>
+							Вход
+						</a>
+						<a href='#' className={`btn ${styles.nav_btn}`}>
+							Избранное
+						</a>
 					</nav>
 				</div>
-			</header>
-		</div>
+			</div>
+		</header>
 	)
 }
 

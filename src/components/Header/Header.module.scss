@@ -1,0 +1,27 @@
+.header{
+    border-bottom: solid 1px #ededed;
+}
+
+.wrapper {
+	padding: 44px 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.logo_wrapper {
+	max-width: 200px;
+}
+
+.nav {
+	display: flex;
+	gap: 20px;
+}
+
+.nav_btn {
+	border: 1px solid #fe5f00;
+	border-radius: 15px;
+	padding: 13px 21px;
+    padding: 14px 22px;
+    color: #fe5f00;
+}
