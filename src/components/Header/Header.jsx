@@ -1,23 +1,46 @@
-import { Link } from "react-router-dom";
-import styles from "./Header.module.scss";
-import logo from "@assets/images/logo.png";
-import Container from "@shared/Container";
+import { Link, useNavigate } from 'react-router-dom';
+import logo from '@assets/images/logo.png';
+import Container from '@shared/Container';
+import { useAuth } from '@shared/api/auth/AuthContext';
+import styles from './Header.module.scss';
 
 const Header = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <header className={styles.header}>
       <Container>
         <div className={styles.wrapper}>
-          <div className={styles.logo_wrapper}>
-            <img src={logo} alt="logo" className={styles.logo} />
-          </div>
+          <Link className={styles.logoWrapper} to="/">
+            <img alt="FLATS logo" className={styles.logo} src={logo} />
+          </Link>
+
           <nav className={styles.nav}>
-            <Link to="/registration" className={styles.link}>
-              Вход
-            </Link>
-            <Link to="/profile" className={styles.link}>
-              Избранное
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link className={styles.link} to="/profile">
+                  Профиль
+                </Link>
+                <button className={styles.link} onClick={handleLogout} type="button">
+                  Выйти
+                </button>
+              </>
+            ) : (
+              <>
+                <Link className={styles.link} to="/login">
+                  Вход
+                </Link>
+                <Link className={styles.link} to="/register">
+                  Регистрация
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </Container>
