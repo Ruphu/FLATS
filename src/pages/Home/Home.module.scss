@@ -1,31 +1,4 @@
-.greetings_title {
-}
-
-.greetings {
-    padding-top: 40px;
-
-	&_title {
-		font-weight: 800;
-		font-size: 36px;
-	}
-
-	&_btn_wrapper {
-		display: flex;
-		justify-content: end;
-	}
-
-	&_btn {
-		border-radius: 15px;
-		background: #fafafa;
-		padding: 16px 22px;
-		font-weight: 400;
-		font-size: 16px;
-		color: #202020;
-	}
-}
-
-.filters {
-    &_flatArea_container {
-        padding-top: 15px;
-    }
+.home { 
+	display: flex;
+	flex-direction: column;
 }

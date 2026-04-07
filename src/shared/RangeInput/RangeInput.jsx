@@ -1,7 +1,7 @@
-import React from 'react';
 import styles from './RangeInput.module.scss';
 
-const RangeInput = ({ title, nameMin, nameMax, valueMin, valueMax, onChange }) => {
+const RangeInput = (props) => {
+  const { title, nameMin, nameMax, valueMin, valueMax, onChange } = props;
   return (
     <div className={styles.range_group}>
       <h3 className={styles.range_title}>{title}</h3>

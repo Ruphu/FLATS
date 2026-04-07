@@ -110,11 +110,12 @@ body {
     background-color: #df8b76;
 }
 
-.btn {
+button {
   transition: all 0.3s ease;
-}
-.btn:hover {
-  transform: scale(1.05);
+
+  &:hover { 
+    transform: scale(1.05);
+  }
 }
 
 

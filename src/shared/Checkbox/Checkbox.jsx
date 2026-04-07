@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './Checkbox.module.scss';
 
 const Checkbox = ({ name, value, label, checked, onChange }) => {
