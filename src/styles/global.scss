@@ -102,6 +102,17 @@ textarea {
   padding: 0 25px;
 }
 
+.checkbox_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.separator {
+  height: 1px;
+  background: var(--color-bg-separator);
+}
+
 body {
   font-family: 'Nunito', sans-serif;
   font-weight: 500;

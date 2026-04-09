@@ -1,5 +1,21 @@
 .filters {
-    &_flatArea_container {
-        padding-top: 15px;
-    }
+	&_flatArea_container {
+		padding-top: 15px;
+	}
+
+	&_title {
+		font-weight: 700;
+		font-size: 22px;
+		padding-bottom: 30px;
+	}
+
+	&_flatType_title {
+		font-weight: 700;
+		font-size: 16px;
+		padding-bottom: 15px;
+	}
+
+	&_flatArea_container {
+		padding-bottom: 30px;
+	}
 }
