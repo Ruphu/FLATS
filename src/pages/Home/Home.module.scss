@@ -1,6 +1,9 @@
 .home { 
 	display: flex;
 	flex-direction: column;
+	background:
+    radial-gradient(circle at top right, rgba(254, 95, 0, 0.16), transparent 30%),
+    linear-gradient(180deg, #fff8f3 0%, #ffffff 52%, #fff4ed 100%);
 }
 
 .content_wrapper {

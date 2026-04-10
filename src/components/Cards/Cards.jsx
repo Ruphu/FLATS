@@ -40,6 +40,24 @@ const apartments = [
 		rooms: 1,
 		image: '../../assets/images/2.jpg',
 	},
+	{
+		id: 5,
+		title: 'ЖК Белый Остров',
+		address: 'пр. Мира, 10, Москва',
+		price: 5200000,
+		area: 28,
+		rooms: 1,
+		image: '../../assets/images/2.jpg',
+	},
+	{
+		id: 6,
+		title: 'ЖК Белый Остров',
+		address: 'пр. Мира, 10, Москва',
+		price: 5200000,
+		area: 28,
+		rooms: 1,
+		image: '../../assets/images/2.jpg',
+	},
 ]
 
 const Cards = () => {
@@ -59,6 +77,8 @@ const Cards = () => {
 						// onDetailsClick={handleDetailsClick}
 					/>
 				))}
+			</div>
+			<div className={styles.cards_pages_container}>
 			</div>
 		</section>
 	)

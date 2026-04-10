@@ -4,12 +4,12 @@
 *,
 *::after,
 *::before {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 body {
-  min-height: 100vh;
-  overflow-x: hidden;
+	min-height: 100vh;
+	overflow-x: hidden;
 }
 
 h1,
@@ -18,110 +18,110 @@ h3,
 h4,
 h5,
 h6 {
-  margin: 0;
-  font-weight: 400;
+	margin: 0;
+	font-weight: 400;
 }
 
 img {
-  max-width: 100%;
-  display: block;
-  vertical-align: top;
+	max-width: 100%;
+	display: block;
+	vertical-align: top;
 }
 
 ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
 
 ul li {
-  list-style-type: none;
+	list-style-type: none;
 }
 
 a,
 a:visited,
 a:hover {
-  display: inline-block;
-  color: inherit;
-  text-decoration: none;
+	display: inline-block;
+	color: inherit;
+	text-decoration: none;
 }
 
 p {
-  margin: 0;
+	margin: 0;
 }
 
 input,
 button,
 textarea {
-  font-family: inherit;
+	font-family: inherit;
 }
 
 input::-ms-clear {
-  display: none;
+	display: none;
 }
 
 button {
-  cursor: pointer;
-  background-color: inherit;
-  border: none;
-  transition: all 0.3s ease;
+	cursor: pointer;
+	background-color: inherit;
+	border: none;
+	transition: all 0.3s ease;
 
-  &:hover {
-    transform: scale(1.05);
-  }
+	&:hover {
+		transform: scale(1.05);
+	}
 }
 
 button::-moz-focus-inner {
-  padding: 0;
-  border: 0;
+	padding: 0;
+	border: 0;
 }
 
 textarea {
-  resize: none;
+	resize: none;
 }
 
 .vhidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  border: 0;
-  padding: 0;
-  clip: rect(0 0 0 0);
-  overflow: hidden;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	border: 0;
+	padding: 0;
+	clip: rect(0 0 0 0);
+	overflow: hidden;
 }
 
 .wow {
-  visibility: hidden;
+	visibility: hidden;
 }
 
 .container {
-  max-width: 1247px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 25px;
+	max-width: 1247px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 25px;
 }
 
 .checkbox_wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
 }
 
 .separator {
-  height: 1px;
-  background: var(--color-bg-separator);
+	height: 1px;
+	background: var(--color-bg-separator);
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 500;
-  font-size: 16px;
-  color: var(--color-text);
+	font-family: 'Nunito', sans-serif;
+	font-weight: 500;
+	font-size: 16px;
+	color: var(--color-text);
 }
 
 ::selection {
-  background-color: var(--color-selection);
+	background-color: var(--color-selection);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');

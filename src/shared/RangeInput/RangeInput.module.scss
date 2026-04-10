@@ -1,8 +1,10 @@
 .range {
 	&_title {
 		padding-bottom: 15px;
+		font-weight: 700;
+		font-size: 16px;
 	}
-	
+
 	&_inputs {
 		display: flex;
 		gap: 15px;
@@ -16,8 +18,4 @@
 		font-size: 14px;
 		max-width: 90px;
 	}
-
-	
 }
-
-
