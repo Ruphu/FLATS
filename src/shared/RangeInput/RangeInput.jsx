@@ -1,30 +1,37 @@
-import styles from './RangeInput.module.scss';
+import styles from './RangeInput.module.scss'
 
-const RangeInput = (props) => {
-  const { title, nameMin, nameMax, valueMin, valueMax, onChange } = props;
-  return (
-    <div className={styles.range_group}>
-      <h3 className={styles.range_title}>{title}</h3>
-      <div className={styles.range_inputs}>
-        <input 
-          type="number" 
-          placeholder="от"
-          name={nameMin}
-          value={valueMin}
-          onChange={onChange}
-          className={styles.range_input}
-        />
-        <input 
-          type="number" 
-          placeholder="до"
-          name={nameMax}
-          value={valueMax}
-          onChange={onChange}
-          className={styles.range_input}
-        />
-      </div>
-    </div>
-  );
-};
+const RangeInput = props => {
+	const { title, nameMin, nameMax, valueMin = '', valueMax = '', onChange } = props
 
-export default RangeInput;
+	return (
+		<fieldset className={styles.group}>
+			<legend className={styles.title}>{title}</legend>
+			<div className={styles.inputs}>
+				<input
+					type='number'
+					inputMode='numeric'
+					min='0'
+					placeholder='от'
+					name={nameMin}
+					value={valueMin}
+					onChange={onChange}
+					className={styles.input}
+					aria-label={`${title} от`}
+				/>
+				<input
+					type='number'
+					inputMode='numeric'
+					min='0'
+					placeholder='до'
+					name={nameMax}
+					value={valueMax}
+					onChange={onChange}
+					className={styles.input}
+					aria-label={`${title} до`}
+				/>
+			</div>
+		</fieldset>
+	)
+}
+
+export default RangeInput

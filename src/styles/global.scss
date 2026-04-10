@@ -25,7 +25,6 @@ h6 {
 img {
 	max-width: 100%;
 	display: block;
-	vertical-align: top;
 }
 
 ul {
@@ -93,24 +92,6 @@ textarea {
 
 .wow {
 	visibility: hidden;
-}
-
-.container {
-	max-width: 1247px;
-	width: 100%;
-	margin: 0 auto;
-	padding: 0 25px;
-}
-
-.checkbox_wrapper {
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
-}
-
-.separator {
-	height: 1px;
-	background: var(--color-bg-separator);
 }
 
 body {

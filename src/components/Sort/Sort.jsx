@@ -1,19 +1,18 @@
-import Container from '@shared/Container';
-import styles from './Sort.module.scss';
+import Container from '@shared/Container'
+import Button from '@shared/Button'
+import styles from './Sort.module.scss'
 
 const Sort = () => {
-  return (
-    <Container>
-      <section className={styles.greetings}>
-        <h1 className={styles.greetings_title}>Все квартиры</h1>
-        <div className={styles.greetings_btn_wrapper}>
-          <button className={styles.greetings_btn}>
-            Сортировка по рейтингу
-          </button>
-        </div>
-      </section>
-    </Container>
-  );
-};
+	return (
+		<Container>
+			<section className={styles.sort}>
+				<h1 className={styles.title}>Все квартиры</h1>
+				<Button size='lg' variant='secondary'className={styles.button}>
+					Сортировка по рейтингу
+				</Button>
+			</section>
+		</Container>
+	)
+}
 
-export default Sort;
+export default Sort

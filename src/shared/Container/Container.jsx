@@ -1,7 +1,7 @@
-const Container = ({ children, className = '' }) => {
-  const containerClassName = ['container', className].filter(Boolean).join(' ');
+import styles from "./Container.module.scss";
 
-  return <div className={containerClassName}>{children}</div>;
+const Container = ({ children, className = "" }) => {
+  return <div className={`${styles.container} ${className}`}>{children}</div>;
 };
 
 export default Container;

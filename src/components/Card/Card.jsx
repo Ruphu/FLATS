@@ -1,6 +1,10 @@
+import Button from '@shared/Button'
+import { fallbackCardImage } from '@constants/card'
 import styles from './Card.module.scss'
 
-const Card = (
+const priceFormatter = new Intl.NumberFormat('ru-RU')
+
+const Card = ({
 	id,
 	image,
 	title,
@@ -9,26 +13,51 @@ const Card = (
 	area,
 	rooms,
 	onDetailsClick,
-) => {
+}) => {
+	const specs = [area ? `${area} м²` : null, rooms ? `${rooms} комн.` : null].filter(Boolean)
+
+	const handleDetailsClick = () => {
+		onDetailsClick?.(id)
+	}
+
 	return (
-		<div className={styles.card_wrapper}>
-			<img
-				src={
-					image ||
-					'https://img.freepik.com/premium-photo/modern-minimalistic-interior-design-light-bright-monochrome-room-with-black-white-furniture-clean-white-walls-huge-windows_267786-4897.jpg?semt=ais_hybrid'
-				}
-				alt='flat'
-				className={styles.card_img}
-			/>
-			<h4 className={styles.card_title}>{title}</h4>
-			<p className={styles.card_text}>{address}</p>
-			<div className={styles.card_info_wrapper}>
-				<p className={styles.card_price}>{price.toLocaleString()} ₽</p>
-				<button className={styles.card_btn} onClick={() => onDetailsClick(id)}>
-					Подробнее
-				</button>
+		<article className={styles.card}>
+			<div className={styles.media}>
+				<img
+					src={image || fallbackCardImage}
+					alt={title ? `Квартира ${title}` : 'Квартира'}
+					className={styles.image}
+				/>
+				{specs.length > 0 && (
+					<div className={styles.badges}>
+						{specs.map(spec => (
+							<span key={spec} className={styles.badge}>
+								{spec}
+							</span>
+						))}
+					</div>
+				)}
 			</div>
-		</div>
+
+			<div className={styles.content}>
+				<div className={styles.header}>
+					<h3 className={styles.title}>{title}</h3>
+					<p className={styles.address}>{address}</p>
+				</div>
+
+				<div className={styles.footer}>
+					<p className={styles.price}>{priceFormatter.format(price)} ₽</p>
+					<Button
+						className={styles.button}
+						disabled={!onDetailsClick}
+						onClick={handleDetailsClick}
+						variant='soft'
+					>
+						Подробнее
+					</Button>
+				</div>
+			</div>
+		</article>
 	)
 }
 

@@ -1,7 +1,4 @@
-import styles from './Cards.module.scss'
-import Card from '@components/Card'
-
-const apartments = [
+export const apartments = [
 	{
 		id: 1,
 		title: 'ЖК Акватория',
@@ -29,7 +26,7 @@ const apartments = [
 		price: 5200000,
 		area: 28,
 		rooms: 1,
-		image: '../../assets/images/2.jpg',
+		image: './images/2.jpg',
 	},
 	{
 		id: 4,
@@ -38,7 +35,7 @@ const apartments = [
 		price: 5200000,
 		area: 28,
 		rooms: 1,
-		image: '../../assets/images/2.jpg',
+		image: './images/2.jpg',
 	},
 	{
 		id: 5,
@@ -47,7 +44,7 @@ const apartments = [
 		price: 5200000,
 		area: 28,
 		rooms: 1,
-		image: '../../assets/images/2.jpg',
+		image: './images/2.jpg',
 	},
 	{
 		id: 6,
@@ -56,32 +53,6 @@ const apartments = [
 		price: 5200000,
 		area: 28,
 		rooms: 1,
-		image: '../../assets/images/2.jpg',
+		image: './images/2.jpg',
 	},
 ]
-
-const Cards = () => {
-	return (
-		<section className='cards'>
-			<div className={styles.cards_container}>
-				{apartments.map(apartment => (
-					<Card
-						key={apartment.id}
-						id={apartment.id}
-						image={apartment.image}
-						title={apartment.title}
-						address={apartment.address}
-						price={apartment.price}
-						area={apartment.area}
-						rooms={apartment.rooms}
-						// onDetailsClick={handleDetailsClick}
-					/>
-				))}
-			</div>
-			<div className={styles.cards_pages_container}>
-			</div>
-		</section>
-	)
-}
-
-export default Cards
