@@ -7,13 +7,23 @@ datasource db {
 }
 
 model User {
-  id           String       @id @default(uuid())
-  name         String
-  email        String       @unique()
-  password     String
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique()
+  password   String
+  preference Preference? @relation()
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
 
   @@index([email])
   @@map("users")
+}
+
+model Preference {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("preferences")
 }

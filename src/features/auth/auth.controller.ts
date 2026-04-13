@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ZodExceptionPipe } from 'src/common/pipes';
 import type { Response } from 'express';
 import type { AuthToken, IAuthService } from './interfaces/auth.interface';
@@ -21,7 +21,6 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Res({ passthrough: true }) res: Response,
     @Body(new ZodExceptionPipe(RegistrationDataSchema))
     registrationDto: RegistrationDataDto,
   ): Promise<AuthToken> {
@@ -32,7 +31,6 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Res({ passthrough: true }) res: Response,
     @Body(new ZodExceptionPipe(LoginCredentialsSchema))
     loginDto: LoginCredentialsDto,
   ): Promise<AuthToken> {
