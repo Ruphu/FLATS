@@ -23,7 +23,33 @@ model Preference {
   id     String @id @default(uuid())
   userId String @unique
 
-  user User @relation(fields: [userId], references: [id])
+  budgetMin         Int
+  budgetMax         Int
 
+  preferredDistrict String
+
+  apartmentType     String
+
+  areaMin           Float
+  areaMax           Float
+
+  roomsCount        Int
+
+  hasBalcony        Boolean  @default(false)
+  hasLoggia         Boolean  @default(false)
+  
+  floorMin          Int
+  floorMax          Int
+
+  houseType         String
+
+  minutesToMetro    Int      
+  
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@map("preferences")
 }
