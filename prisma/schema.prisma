@@ -23,27 +23,27 @@ model Preference {
   id     String @id @default(uuid())
   userId String @unique
 
-  budgetMin         Int
-  budgetMax         Int
+  budgetMin         Int @map("budget_min")
+  budgetMax         Int @map("budget_max")
 
-  preferredDistrict String
+  preferredDistrict String @map("preferred_district")
 
-  apartmentType     String
+  apartmentType     String @map("apartment_type")
 
-  areaMin           Float
-  areaMax           Float
+  areaMin           Float @map("area_min")
+  areaMax           Float @map("area_max")
 
-  roomsCount        Int
+  roomsCount        Int @map("rooms_count")
 
   hasBalcony        Boolean  @default(false)
   hasLoggia         Boolean  @default(false)
   
-  floorMin          Int
-  floorMax          Int
+  floorMin          Int @map("floor_min")
+  floorMax          Int @map("floor_max")
 
-  houseType         String
+  houseType         String @map("house_type")
 
-  minutesToMetro    Int      
+  minutesToMetro    Int @map("minutes_to_metro")      
   
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
