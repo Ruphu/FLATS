@@ -15,7 +15,7 @@ import {
 import { ZodExceptionPipe } from '@common/pipes';
 import { Authorizated, Authorization } from '@common/decorators';
 import type { Preference, User } from '@prisma/client';
-import type { IUserService } from './interfaces/user.interfaces';
+import type { IUserService } from './interfaces/user.interface';
 
 @Controller('user')
 export class UserController {
