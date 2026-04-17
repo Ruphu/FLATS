@@ -1,0 +1,55 @@
+.pref {
+	&_title {
+		font-weight: 600;
+		font-size: 25px;
+		padding-bottom: 20px;
+	}
+}
+
+.flatType {
+	&_container {
+		border-bottom: 1px solid var(--color-border-soft);
+		padding-bottom: 24px;
+		margin-bottom: 24px;
+	}
+
+	&_title {
+		padding-bottom: 15px;
+    font-weight: 700;
+    font-size: 16px;
+	}
+
+	&_wrapper {
+		display: flex;
+		gap: 13px;
+		flex-direction: column;
+	}
+}
+
+.flatArea_container,
+.roomNumber_container,
+.floor_container {
+	padding-bottom: 24px;
+	margin-bottom: 24px;
+	border-bottom: 1px solid var(--color-border-soft);
+}
+
+.isBalcony {
+	&_container {
+		padding-bottom: 24px;
+		margin-bottom: 24px;
+		border-bottom: 1px solid var(--color-border-soft);
+	}
+  
+  &_title {
+    padding-bottom: 15px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  &_wrapper {
+    display: flex;
+    gap: 13px;
+		flex-direction: column;
+  }
+}

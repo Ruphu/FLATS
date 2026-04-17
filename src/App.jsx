@@ -17,9 +17,9 @@ function App() {
             <Route element={<Register />} path="/register" />
             <Route
               element={
-                <RequireAuth>
+               // <RequireAuth>
                   <Profile />
-                </RequireAuth>
+               // </RequireAuth>
               }
               path="/profile"
             />

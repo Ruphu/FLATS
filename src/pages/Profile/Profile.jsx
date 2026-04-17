@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Header from '@components/Header'
 import Container from '@shared/Container'
+import Preferences from '@components/Preferences'
 import { getMeRequest } from '@shared/api/auth/authApi'
 import useAuth from '@hooks/useAuth'
 import styles from './Profile.module.scss'
@@ -8,47 +9,47 @@ import styles from './Profile.module.scss'
 const Profile = () => {
 	const { logout } = useAuth()
 	const [errorMessage, setErrorMessage] = useState('')
-	const [isLoading, setIsLoading] = useState(true)
-	const [profile, setProfile] = useState(null)
+	const [isLoading, setIsLoading] = useState(false)
+	const [profile, setProfile] = useState({ name: '1', email: '1@1.com' })
 
-	useEffect(() => {
-		let isMounted = true
+	// useEffect(() => {
+	// 	let isMounted = true
 
-		const loadProfile = async () => {
-			try {
-				const response = await getMeRequest()
-				const nextProfile = response?.user ?? response?.data ?? response
+	// 	const loadProfile = async () => {
+	// 		try {
+	// 			const response = await getMeRequest()
+	// 			const nextProfile = response?.user ?? response?.data ?? response
 
-				if (!isMounted) {
-					return
-				}
+	// 			if (!isMounted) {
+	// 				return
+	// 			}
 
-				setProfile(nextProfile)
-				setErrorMessage('')
-			} catch (error) {
-				if (!isMounted) {
-					return
-				}
+	// 			setProfile(nextProfile)
+	// 			setErrorMessage('')
+	// 		} catch (error) {
+	// 			if (!isMounted) {
+	// 				return
+	// 			}
 
-				if (error.status === 401) {
-					logout()
-					return
-				}
+	// 			if (error.status === 401) {
+	// 				logout()
+	// 				return
+	// 			}
 
-				setErrorMessage(error.message ?? 'Не удалось загрузить профиль')
-			} finally {
-				if (isMounted) {
-					setIsLoading(false)
-				}
-			}
-		}
+	// 			setErrorMessage(error.message ?? 'Не удалось загрузить профиль')
+	// 		} finally {
+	// 			if (isMounted) {
+	// 				setIsLoading(false)
+	// 			}
+	// 		}
+	// 	}
 
-		loadProfile()
+	// 	loadProfile()
 
-		return () => {
-			isMounted = false
-		}
-	}, [logout])
+	// 	return () => {
+	// 		isMounted = false
+	// 	}
+	// }, [logout])
 
 	return (
 		<div className={styles.page}>
@@ -62,8 +63,12 @@ const Profile = () => {
 						Здесь отображается информация о вашем профиле.
 					</p>
 
-					{isLoading ? <p className={styles.status}>Загружаем данные профиля...</p> : null}
-					{!isLoading && errorMessage ? <p className={styles.error}>{errorMessage}</p> : null}
+					{isLoading ? (
+						<p className={styles.status}>Загружаем данные профиля...</p>
+					) : null}
+					{!isLoading && errorMessage ? (
+						<p className={styles.error}>{errorMessage}</p>
+					) : null}
 
 					{!isLoading && profile ? (
 						<dl className={styles.details}>
@@ -77,6 +82,9 @@ const Profile = () => {
 							</div>
 						</dl>
 					) : null}
+
+
+					<Preferences></Preferences>
 				</section>
 			</Container>
 		</div>

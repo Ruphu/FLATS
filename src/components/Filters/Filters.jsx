@@ -95,7 +95,12 @@ const Filters = ({ onApply }) => {
 				)}
 			</div>
 
-			<Button className={styles.confirmButton} fullWidth size='lg' type='submit'>
+			<Button
+				className={styles.confirmButton}
+				fullWidth
+				size='lg'
+				type='submit'
+			>
 				Применить
 			</Button>
 		</form>
