@@ -3,6 +3,7 @@ import Home from '@pages/Home';
 import Login from '@pages/Login';
 import Profile from '@pages/Profile';
 import Register from '@pages/Register';
+import Flat from '@pages/Flat';
 import { AuthProvider } from '@shared/api/auth/AuthContext';
 import RequireAuth from '@shared/api/auth/RequireAuth';
 
@@ -15,6 +16,7 @@ function App() {
             <Route element={<Home />} path="/" />
             <Route element={<Login />} path="/login" />
             <Route element={<Register />} path="/register" />
+            <Route element={<Flat />} path="/flat" />
             <Route
               element={
                // <RequireAuth>
