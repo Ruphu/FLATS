@@ -6,6 +6,11 @@ datasource db {
   provider = "sqlite"
 }
 
+enum ApartmentType {
+  new_building @map("Новостройка")
+  secondary    @map("Вторичка")
+}
+
 model User {
   id         String      @id @default(uuid())
   name       String
@@ -23,30 +28,30 @@ model Preference {
   id     String @id @default(uuid())
   userId String @unique
 
-  budgetMin         Int @map("budget_min")
-  budgetMax         Int @map("budget_max")
+  budgetMin Int @map("budget_min")
+  budgetMax Int @map("budget_max")
 
   preferredDistrict String @map("preferred_district")
 
-  apartmentType     String @map("apartment_type")
+  apartmentType ApartmentType @map("apartment_type")
 
-  areaMin           Float @map("area_min")
-  areaMax           Float @map("area_max")
+  areaMin Float @map("area_min")
+  areaMax Float @map("area_max")
 
-  roomsCount        Int @map("rooms_count")
+  roomsCount Int @map("rooms_count")
 
-  hasBalcony        Boolean  @default(false)
-  hasLoggia         Boolean  @default(false)
-  
-  floorMin          Int @map("floor_min")
-  floorMax          Int @map("floor_max")
+  hasBalcony Boolean @default(false)
+  hasLoggia  Boolean @default(false)
 
-  houseType         String @map("house_type")
+  floorMin Int @map("floor_min")
+  floorMax Int @map("floor_max")
 
-  minutesToMetro    Int @map("minutes_to_metro")      
-  
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  houseType String @map("house_type")
+
+  minutesToMetro Int @map("minutes_to_metro")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -54,30 +59,28 @@ model Preference {
   @@map("preferences")
 }
 
-model Apartment{
-  id               String   @id @default(uuid())
+model Apartment {
+  id String @id @default(uuid())
 
-  title            String
-  images           Image[]
-  description      String?
-  address          String
+  title       String
+  images      Image[]
+  description String? @default("")
+  address     String
 
-  price            Int
-  district         String
-  apartmentType    String @map("apartment_type")
-  area             Float
-  roomsCount       Int @map("rooms_count")
-  hasBalcony       Boolean @default(false) @map("has_balcony")
-  hasLoggia        Boolean @default(false) @map("has_loggia")
-  floor            Int
-  houseType        String @map("house_type")
-  minutesToMetro   Int @map("minutes_to_metro")
-  nearestMetro     String @map("nearest_metro")
+  price          Int
+  district       String
+  apartmentType  ApartmentType @map("apartment_type")
+  area           Float
+  roomsCount     Int           @map("rooms_count")
+  hasBalcony     Boolean       @default(false) @map("has_balcony")
+  hasLoggia      Boolean       @default(false) @map("has_loggia")
+  floor          Int
+  houseType      String        @map("house_type")
+  minutesToMetro Int           @map("minutes_to_metro")
+  nearestMetro   String        @map("nearest_metro")
 
-  
-
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([price])
   @@index([roomsCount])
@@ -87,14 +90,14 @@ model Apartment{
 
 model Image {
   id          String    @id @default(uuid())
-  url         String    
+  url         String
   order       Int       @default(0) // Порядок отображения (0 - главное)
   apartmentId String    @map("apartment_id")
   apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   @@index([apartmentId])
   @@index([order])
   @@map("images")

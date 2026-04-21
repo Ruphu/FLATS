@@ -15,7 +15,7 @@ import { ApartmentModule } from '@features/apartment/apartment.module';
     AuthModule,
     UserModule,
     PrismaModule,
-    ApartmentModule
+    ApartmentModule,
   ],
 })
 export class AppModule {}

@@ -8,8 +8,7 @@ import { ApartmentController } from './apartment.controller';
     {
       provide: 'IApartmentService',
       useClass: ApartmentService,
-    }
-    ],
+    },
+  ],
 })
-
 export class ApartmentModule {}

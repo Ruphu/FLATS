@@ -1,25 +1,44 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateApartmentDTO, ApartmentResponseDTO } from './dto/apartment.dto';
+import { randomUUID } from 'node:crypto';
+import { ApartmentMapper } from '@common/mappers';
+import type { ApartmentWithImages } from '@common/mappers/apartment.mapper';
 import { PrismaService } from '@infra/prisma/prisma.service';
-
+import { CreateApartmentDTO } from './dto/apartment.dto';
 
 @Injectable()
 export class ApartmentService {
   constructor(private readonly prisma: PrismaService) {}
 
-    async create(data: CreateApartmentDTO): Promise<ApartmentResponseDTO> {
-    const { images, ...apartmentData } = data;
+  async upsertApartment(
+    data: CreateApartmentDTO,
+  ): Promise<ApartmentWithImages> {
+    const apartmentId = data.id ?? randomUUID();
 
-    const result = await this.prisma.apartment.create({
-      data: {
-        ...apartmentData,
+    return await this.prisma.apartment.upsert({
+      where: { id: apartmentId },
+      create: ApartmentMapper.toCreateInput(apartmentId, data),
+      update: ApartmentMapper.toUpdateInput(data),
+      include: {
         images: {
-          create: images?.map((img, index) => ({
-            url: img.url,
-            order: img.order ?? index,
-          })) || [],
+          orderBy: { order: 'asc' },
         },
       },
+    });
+  }
+
+  async getAllApartments(): Promise<ApartmentWithImages[]> {
+    return await this.prisma.apartment.findMany({
+      include: {
+        images: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+  }
+
+  async getApartmentById(id: string): Promise<ApartmentWithImages> {
+    const apartment = await this.prisma.apartment.findUnique({
+      where: { id },
       include: {
         images: {
           orderBy: { order: 'asc' },
@@ -27,59 +46,11 @@ export class ApartmentService {
       },
     });
 
-    return result as unknown as ApartmentResponseDTO;
-  }
-
-  async upsertApartment(
-    id: string,
-    data: CreateApartmentDTO,
-  ): Promise<ApartmentResponseDTO> {
-    const { images, ...apartmentData } = data;
-
-    const result = await this.prisma.apartment.upsert({
-      where: { id },
-      create: {
-        id,
-        ...apartmentData,
-        images: {
-          create: images?.map((img, index) => ({
-            url: img.url,
-            order: img.order ?? index,
-          })) || [],
-        },
-      },
-      update: {
-        ...apartmentData,
-        images: {
-          // Удаляем старые и создаём новые
-          deleteMany: {},
-          create: images?.map((img, index) => ({
-            url: img.url,
-            order: img.order ?? index,
-          })) || [],
-        },
-      },
-      include:{
-        images: true,  
-      },
-    });
-
-    return result as ApartmentResponseDTO;
-  }
-
-  async getApartmentById(id: string): Promise<ApartmentResponseDTO> {
-    const apartment = await this.prisma.apartment.findUnique({
-      where: { id },
-      include: {
-        images: true,
-      },
-    });
-
     if (!apartment) {
       throw new NotFoundException('Apartment not found');
     }
 
-    return apartment as ApartmentResponseDTO;
+    return apartment;
   }
 
   async deleteApartment(id: string): Promise<void> {
@@ -89,7 +60,4 @@ export class ApartmentService {
       where: { id },
     });
   }
-}           
-
-
-
+}

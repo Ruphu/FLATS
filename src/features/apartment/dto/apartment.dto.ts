@@ -1,5 +1,6 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
+const HOUSE_TYPES = ['Панельный', 'Кирпичный', 'Монолитный'] as const;
 export const MetroStationEnum = z.enum([
   'Автово',
   'Адмиралтейская',
@@ -71,75 +72,89 @@ export const MetroStationEnum = z.enum([
 ]);
 
 export const ImageSchema = z.object({
-  url: z.url('Должен быть корректный URL'),
+  url: z.string(),
   order: z.number().int().min(0).default(0),
 });
 
 export const BaseApartmentSchema = z.object({
-  title: z.string()
+  id: z.string().uuid().optional(),
+  title: z
+    .string()
     .min(3, 'The name is too short (min. 3 characters)')
     .max(200, 'The name is too long (max. 200 characters)'),
-  description: z.string()
+  description: z
+    .string()
+    .max(5000, 'The description is too long (max. 5000 characters)')
     .optional()
     .nullable(),
-  address: z.string()
+  address: z
+    .string()
     .min(5, 'The address is too short (min. 5 characters)')
     .max(500, 'The address is too long (max. 500 characters)'),
-  price: z.number()
+  price: z
+    .number()
     .int('The price must be an integer')
     .min(0, 'The price cannot be negative'),
-  district: z.string()
+  district: z
+    .string()
     .min(2, 'The district name is too short')
     .max(100, 'The district name is too long'),
-  apartmentType: z.enum(['Новостройка', 'Вторичка'], {
-      message: 'Apartment type must be either "Новостройка" or "Вторичка"',
-    }),
-  area: z.number()
+  apartmentType: z.enum(['new_building', 'secondary'], {
+    message: 'Apartment type must be either "new_building" or "secondary"',
+  }),
+  area: z
+    .number()
     .min(1, 'The area must be at least 1 m²')
     .max(1000, 'The area cannot exceed 1000 m²'),
-  roomsCount: z.number()
+  roomsCount: z
+    .number()
     .int('The number of rooms must be an integer')
     .min(0, 'The number of rooms cannot be negative (0 - studio)')
     .max(20, 'Too many rooms (max. 20)'),
   hasBalcony: z.boolean().default(false),
   hasLoggia: z.boolean().default(false),
-  floor: z.number()
+  floor: z
+    .number()
     .int('The floor must be an integer')
     .min(0, 'The floor cannot be negative')
     .max(200, 'The floor is too high'),
-  houseType: z.enum(['Панельный', 'Кирпичный', 'Монолитный'], {
-      message:
-        'House type must be either "Панельный", "Кирпичный" or "Монолитный"',
-    }),
-  minutesToMetro: z.number()
+  houseType: z
+    .string()
+    .refine(
+      (value) => HOUSE_TYPES.includes(value as (typeof HOUSE_TYPES)[number]),
+      {
+        message:
+          'House type must be either "Панельный", "Кирпичный" or "Монолитный"',
+      },
+    ),
+  minutesToMetro: z
+    .number()
     .int('Minutes to metro must be an integer')
     .min(0, 'Minutes to metro cannot be negative')
     .max(120, 'Minutes to metro cannot exceed 120'),
-  nearestMetro: MetroStationEnum,
+  nearestMetro: z
+    .string()
+    .refine(
+      (value) =>
+        MetroStationEnum.options.includes(
+          value as (typeof MetroStationEnum.options)[number],
+        ),
+      {
+        message: 'Nearest metro must be a valid station',
+      },
+    ),
   images: z.array(ImageSchema).optional().default([]),
-}).refine(
-  (data) => {
-    if (data.description && data.description.length > 5000) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'The description cannot exceed 5000 characters',
-    path: ['description'],
-  }
-);
+});
 
 export const CreateApartmentSchema = BaseApartmentSchema;
 
 export const CreateApartmentDTO = BaseApartmentSchema;
 
-export const ApartmentResponseDTO = BaseApartmentSchema.extend({
-  id: z.uuid(),      
-  createdAt: z.date(),           
-  updatedAt: z.date(),           
+export const ApartmentResponseDTO = BaseApartmentSchema.safeExtend({
+  id: z.uuid(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type CreateApartmentDTO = z.infer<typeof CreateApartmentDTO>;
 export type ApartmentResponseDTO = z.infer<typeof ApartmentResponseDTO>;
-

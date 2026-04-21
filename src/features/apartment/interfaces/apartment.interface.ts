@@ -1,14 +1,9 @@
-import { CreateApartmentDTO, ApartmentResponseDTO } from '../dto/apartment.dto';
-
+import type { ApartmentWithImages } from '@common/mappers/apartment.mapper';
+import { CreateApartmentDTO } from '../dto/apartment.dto';
 
 export interface IApartmentService {
-    create(data: CreateApartmentDTO): Promise<ApartmentResponseDTO>;
-
-    upsertApartment(id: string, 
-                    data: CreateApartmentDTO
-                ): Promise<ApartmentResponseDTO>;
-
-    getApartmentById(id: string): Promise<ApartmentResponseDTO>;
-    deleteApartment(id: string): Promise<void>;
-
+  upsertApartment(data: CreateApartmentDTO): Promise<ApartmentWithImages>;
+  getApartmentById(id: string): Promise<ApartmentWithImages>;
+  getAllApartments(): Promise<ApartmentWithImages[]>;
+  deleteApartment(id: string): Promise<void>;
 }

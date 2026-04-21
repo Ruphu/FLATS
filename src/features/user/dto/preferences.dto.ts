@@ -1,41 +1,40 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
+const HOUSE_TYPES = ['Панельный', 'Кирпичный', 'Монолитный'] as const;
 export const BasePreferencesSchema = z
   .object({
-    budgetMin: z
-      .number({ message: 'Budget min must be a number' })
-      .min(0, 'Budget min must be at least 0'),
-    budgetMax: z
-      .number({ message: 'Budget max must be a number' })
-      .min(0, 'Budget max must be at least 0'),
+    budgetMin: z.number({ message: 'Budget min must be a number' }),
+    budgetMax: z.number({ message: 'Budget max must be a number' }),
     preferredDistrict: z
       .string({ message: 'Preferred district must be a string' })
-      .min(2, 'The name of the area is too short')
       .max(100, 'The name of the area is too long'),
-    apartmentType: z.enum(['Новостройка', 'Вторичка'], {
-      message: 'Apartment type must be either "Новостройка" or "Вторичка"',
+    apartmentType: z.enum(['new_building', 'secondary'], {
+      message: 'Apartment type must be either "new_building" or "secondary"',
     }),
-    areaMin: z
-      .number({ message: 'Area min must be a number' })
-      .min(0, 'Area min must be at least 0'),
-    areaMax: z
-      .number({ message: 'Area max must be a number' })
-      .min(0, 'Area max must be at least 0'),
-    roomsCount: z.number({ message: 'Rooms count min must be a number' }), // 0 комнат - студия, поэтому минимальное количество комнат может быть 0
+    areaMin: z.number({ message: 'Area min must be a number' }),
+    areaMax: z.number({ message: 'Area max must be a number' }),
+    roomsCount: z
+      .number({ message: 'Rooms count min must be a number' })
+      .max(10, 'Too many rooms (max. 10)'), // 0 комнат - студия, поэтому минимальное количество комнат может быть 0
     hasBalcony: z.boolean({ message: 'Поле должно быть true/false' }),
     hasLoggia: z.boolean({ message: 'Поле должно быть true/false' }),
     floorMin: z
       .number({ message: 'Floor min must be a number' })
       .int({ message: 'Floor min must be an integer' })
-      .min(0, 'Floor min must be at least 0'),
+      .min(1, 'Floor min must be at least 1'),
     floorMax: z
       .number({ message: 'Floor max must be a number' })
       .int({ message: 'Floor max must be an integer' })
       .min(1, 'Floor max must be at least 1'),
-    houseType: z.enum(['Панельный', 'Кирпичный', 'Монолитный'], {
-      message:
-        'House type must be either "Панельный", "Кирпичный" or "Монолитный"',
-    }),
+    houseType: z
+      .string()
+      .refine(
+        (value) => HOUSE_TYPES.includes(value as (typeof HOUSE_TYPES)[number]),
+        {
+          message:
+            'House type must be either "Панельный", "Кирпичный" or "Монолитный"',
+        },
+      ),
     minutesToMetro: z
       .number({ message: 'Minutes to metro must be a number' })
       .int({ message: 'Minutes to metro must be an integer' })
@@ -61,4 +60,3 @@ export const CreatePreferencesSchema = BasePreferencesSchema.refine(
   });
 
 export type CreatePreferencesDTO = z.infer<typeof CreatePreferencesSchema>;
-
