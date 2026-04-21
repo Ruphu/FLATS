@@ -6,17 +6,12 @@ import CardsList from "@components/CardsList";
 import Container from "@shared/Container";
 
 const Home = () => {
-  const handleApplyFilters = (filters) => {
-    console.log("Applied filters:", filters);
-    // добавить логику для применения фильтров к данным
-  };
-
   return (
     <div className={styles.home}>
       <Header />
       <Sort />
       <Container className={`${styles.contentWrapper}`}>
-        <Filters onApply={handleApplyFilters} />
+        <Filters />
         <CardsList />
       </Container>
     </div>

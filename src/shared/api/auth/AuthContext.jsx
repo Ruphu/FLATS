@@ -1,6 +1,10 @@
 import { createContext, useState } from 'react'
-import { loginRequest, registerRequest } from '@shared/api/auth/authApi'
-import { clearStoredAuth, getAuthToken, setAuthToken } from '@shared/api/auth/tokenStorage'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+	clearStoredAuth,
+	getAuthToken,
+	setAuthToken,
+} from '@shared/api/auth/tokenStorage'
 
 export const AuthContext = createContext(null)
 
@@ -12,9 +16,10 @@ const extractToken = response =>
 	null
 
 export const AuthProvider = ({ children }) => {
+	const queryClient = useQueryClient()
 	const [token, setToken] = useState(() => getAuthToken())
 
-	const applyAuthResponse = response => {
+	const authenticate = response => {
 		const nextToken = extractToken(response)
 
 		if (!nextToken) {
@@ -24,31 +29,22 @@ export const AuthProvider = ({ children }) => {
 		setAuthToken(nextToken)
 		setToken(nextToken)
 
-		return { token: nextToken }
-	}
-
-	const login = async (credentials) => {
-		const response = await loginRequest(credentials)
-		return applyAuthResponse(response)
-	}
-
-	const register = async (payload) => {
-		const response = await registerRequest(payload)
-		return applyAuthResponse(response)
+		return nextToken
 	}
 
 	const logout = () => {
 		clearStoredAuth()
 		setToken(null)
+		queryClient.removeQueries({ queryKey: ['auth'] })
+		queryClient.removeQueries({ queryKey: ['user'] })
 	}
 
 	return (
 		<AuthContext.Provider
 			value={{
+				authenticate,
 				isAuthenticated: Boolean(token),
-				login,
 				logout,
-				register,
 				token,
 			}}
 		>

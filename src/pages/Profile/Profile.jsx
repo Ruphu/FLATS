@@ -1,55 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Header from '@components/Header'
-import Container from '@shared/Container'
 import Preferences from '@components/Preferences'
-import { getMeRequest } from '@shared/api/auth/authApi'
-import useAuth from '@hooks/useAuth'
+import { PROFILE_ERROR_MESSAGES } from '@constants/api_errors'
+import { useAuth, useMe } from '@hooks'
+import Container from '@shared/Container'
 import styles from './Profile.module.scss'
 
 const Profile = () => {
 	const { logout } = useAuth()
-	const [errorMessage, setErrorMessage] = useState('')
-	const [isLoading, setIsLoading] = useState(false)
-	const [profile, setProfile] = useState({ name: '1', email: '1@1.com' })
+	const meQuery = useMe()
+	const profile = meQuery.data?.user ?? meQuery.data?.data ?? meQuery.data
+	const errorMessage = meQuery.isError
+		? PROFILE_ERROR_MESSAGES[meQuery.error?.status] ??
+			PROFILE_ERROR_MESSAGES.default
+		: ''
 
-	// useEffect(() => {
-	// 	let isMounted = true
-
-	// 	const loadProfile = async () => {
-	// 		try {
-	// 			const response = await getMeRequest()
-	// 			const nextProfile = response?.user ?? response?.data ?? response
-
-	// 			if (!isMounted) {
-	// 				return
-	// 			}
-
-	// 			setProfile(nextProfile)
-	// 			setErrorMessage('')
-	// 		} catch (error) {
-	// 			if (!isMounted) {
-	// 				return
-	// 			}
-
-	// 			if (error.status === 401) {
-	// 				logout()
-	// 				return
-	// 			}
-
-	// 			setErrorMessage(error.message ?? 'Не удалось загрузить профиль')
-	// 		} finally {
-	// 			if (isMounted) {
-	// 				setIsLoading(false)
-	// 			}
-	// 		}
-	// 	}
-
-	// 	loadProfile()
-
-	// 	return () => {
-	// 		isMounted = false
-	// 	}
-	// }, [logout])
+	useEffect(() => {
+		if (meQuery.error?.status === 401) {
+			logout()
+		}
+	}, [logout, meQuery.error])
 
 	return (
 		<div className={styles.page}>
@@ -63,14 +33,14 @@ const Profile = () => {
 						Здесь отображается информация о вашем профиле.
 					</p>
 
-					{isLoading ? (
+					{meQuery.isPending ? (
 						<p className={styles.status}>Загружаем данные профиля...</p>
 					) : null}
-					{!isLoading && errorMessage ? (
+					{meQuery.isError ? (
 						<p className={styles.error}>{errorMessage}</p>
 					) : null}
 
-					{!isLoading && profile ? (
+					{profile ? (
 						<dl className={styles.details}>
 							<div className={styles.row}>
 								<dt>Имя</dt>
@@ -83,8 +53,7 @@ const Profile = () => {
 						</dl>
 					) : null}
 
-
-					<Preferences></Preferences>
+					<Preferences />
 				</section>
 			</Container>
 		</div>

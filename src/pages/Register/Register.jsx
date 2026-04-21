@@ -1,14 +1,20 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AuthForm from '@components/AuthForm'
-import Container from '@shared/Container'
+import { AUTH_ERROR_MESSAGES } from '@constants/api_errors'
 import { registerContent, registerFields } from '@constants/auth'
-import useAuth from '@hooks/useAuth'
+import { useAuth, useRegister } from '@hooks'
+import Container from '@shared/Container'
 import styles from './Register.module.scss'
 
 const Register = () => {
-	const { isAuthenticated, register } = useAuth()
+	const { isAuthenticated } = useAuth()
 	const navigate = useNavigate()
+	const registerMutation = useRegister()
+	const errorMessage = registerMutation.isError
+		? AUTH_ERROR_MESSAGES[registerMutation.error?.status] ??
+			AUTH_ERROR_MESSAGES.default
+		: ''
 
 	useEffect(() => {
 		if (isAuthenticated) {
@@ -17,7 +23,7 @@ const Register = () => {
 	}, [isAuthenticated, navigate])
 
 	const handleSubmit = async values => {
-		await register(values)
+		await registerMutation.mutateAsync(values)
 		navigate('/profile', { replace: true })
 	}
 
@@ -25,7 +31,9 @@ const Register = () => {
 		<main className={styles.page}>
 			<Container>
 				<AuthForm
+					errorMessage={errorMessage}
 					fields={registerFields}
+					isSubmitting={registerMutation.isPending}
 					onSubmit={handleSubmit}
 					{...registerContent}
 				/>

@@ -15,14 +15,14 @@ const AuthForm = ({
 	alternateLinkTo,
 	alternateText,
 	description,
+	errorMessage = '',
 	fields,
+	isSubmitting = false,
 	onSubmit,
 	submitLabel,
 	title,
 }) => {
 	const [formValues, setFormValues] = useState(() => createInitialValues(fields))
-	const [errorMessage, setErrorMessage] = useState('')
-	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	const handleChange = event => {
 		const { name, value } = event.target
@@ -35,15 +35,11 @@ const AuthForm = ({
 
 	const handleSubmit = async event => {
 		event.preventDefault()
-		setErrorMessage('')
-		setIsSubmitting(true)
 
 		try {
 			await onSubmit(formValues)
-		} catch (error) {
-			setErrorMessage(error.message ?? 'Something went wrong')
-		} finally {
-			setIsSubmitting(false)
+		} catch {
+			return
 		}
 	}
 
@@ -62,6 +58,8 @@ const AuthForm = ({
 						id={field.name}
 						key={field.name}
 						label={field.label}
+						maxLength={field.maxLength}
+						minLength={field.minLength}
 						name={field.name}
 						onChange={handleChange}
 						placeholder={field.placeholder}

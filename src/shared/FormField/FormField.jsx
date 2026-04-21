@@ -10,6 +10,7 @@ const FormField = ({
   required = true,
   type,
   value,
+  ...restProps
 }) => {
   return (
     <label className={styles.field} htmlFor={id ?? name}>
@@ -24,6 +25,7 @@ const FormField = ({
         required={required}
         type={type}
         value={value}
+        {...restProps}
       />
     </label>
   );

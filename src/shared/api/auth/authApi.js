@@ -1,19 +1,19 @@
-import { apiClient } from '@shared/api/apiClient';
-import { AUTH_API_PATHS } from '@config/api';
+import { API_PATHS } from '@constants/api_paths'
+import { apiClient } from '@shared/api/apiClient'
 
-export const loginRequest = (credentials) =>
-  apiClient(AUTH_API_PATHS.login, {
-    method: 'POST',
-    body: credentials,
-  });
+export const loginRequest = credentials =>
+	apiClient(API_PATHS.AUTH.login, {
+		method: 'POST',
+		body: credentials,
+	})
 
-export const registerRequest = (payload) =>
-  apiClient(AUTH_API_PATHS.register, {
-    method: 'POST',
-    body: payload,
-  });
+export const registerRequest = payload =>
+	apiClient(API_PATHS.AUTH.register, {
+		method: 'POST',
+		body: payload,
+	})
 
 export const getMeRequest = () =>
-  apiClient(AUTH_API_PATHS.me, {
-    method: 'GET',
-  });
+	apiClient(API_PATHS.AUTH.me, {
+		method: 'GET',
+	})

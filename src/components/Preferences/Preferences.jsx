@@ -1,58 +1,103 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from '@shared/Button'
-import Checkbox from '@shared/Checkbox'
-import { filterSections, initialFilters } from '@constants/filters'
+import { PREFERENCES_ERROR_MESSAGES } from '@constants/api_errors'
+import { initialCriteria } from '@constants/propertyCriteria'
+import { buildCriteria } from '@shared/libs'
+import { usePreferences } from '@hooks'
+import PropertyCriteriaFields from '@shared/PropertyCriteriaFields'
 import styles from './Preferences.module.scss'
-import RangeInput from '@shared/RangeInput'
-
-
-
 
 const Preferences = () => {
+	const [preferences, setPreferences] = useState(initialCriteria)
+	const { preferencesQuery, updatePreferencesMutation } = usePreferences()
+	const loadErrorMessage = preferencesQuery.isError
+		? PREFERENCES_ERROR_MESSAGES.load[preferencesQuery.error?.status] ??
+			PREFERENCES_ERROR_MESSAGES.load.default
+		: ''
+	const saveErrorMessage = updatePreferencesMutation.isError
+		? PREFERENCES_ERROR_MESSAGES.save[updatePreferencesMutation.error?.status] ??
+			PREFERENCES_ERROR_MESSAGES.save.default
+		: ''
+
+	useEffect(() => {
+		if (!preferencesQuery.data) {
+			return
+		}
+
+		setPreferences(buildCriteria(preferencesQuery.data, 'form'))
+	}, [preferencesQuery.data])
+
+	const resetMutation = () => {
+		if (updatePreferencesMutation.isError || updatePreferencesMutation.isSuccess) {
+			updatePreferencesMutation.reset()
+		}
+	}
+
+	const handleInputChange = event => {
+		const { name, value } = event.target
+
+		setPreferences(currentPreferences => ({
+			...currentPreferences,
+			[name]: value,
+		}))
+
+		resetMutation()
+	}
+
+	const handleCheckboxChange = event => {
+		const { name, checked } = event.target
+
+		setPreferences(currentPreferences => ({
+			...currentPreferences,
+			[name]: checked,
+		}))
+
+		resetMutation()
+	}
+
+	const handleSubmit = async event => {
+		event.preventDefault()
+
+		await updatePreferencesMutation.mutateAsync(buildCriteria(preferences))
+	}
+
 	return (
-		<>
-			<h3 className={styles.pref_title}>Предпочтения</h3>
-					<div className={styles.flatType_container}>
-						<h3 className={styles.flatType_title}>Тип квартиры</h3>
-						<div className={styles.flatType_wrapper}>
-							<Checkbox name='flatType' value='new' label='Новостройка' />
-							<Checkbox name='flatType' value='secondary' label='Вторичка' />
-						</div>
-					</div>
-					
-					<div className={styles.flatArea_container}>
-						<RangeInput
-							title='Площадь, м²'
-							nameMin='areaMin'
-							nameMax='areaMax'
-						/>
-					</div>
-					
-					<div className={styles.roomNumber_container}>
-						<RangeInput
-							title='Количество комнат'
-							nameMin='roomNumberMin'
-							nameMax='roomNumberMax'
-						/>
-					</div>
-					
-					<div className={styles.floor_container}>
-						<RangeInput title='Этаж' nameMin='floorMin' nameMax='floorMax' />
-					</div>
-					
-					<div className={styles.isBalcony_container}>
-						<h3 className={styles.isBalcony_title}>
-							Наличие балкона/лоджии
-						</h3>
-						<div className={styles.isBalcony_wrapper}>
-							<Checkbox name='isBalcony' value='balcony' label='Балкон' />
-							<Checkbox name='isBalcony' value='loggia' label='Лоджия' />
-						</div>
-					</div>
-					<Button className={styles.buttonConfirm}>Сохранить</Button>
-		</>
+		<form className={styles.form} onSubmit={handleSubmit}>
+			<h3 className={styles.title}>Предпочтения</h3>
+
+			{preferencesQuery.isPending ? (
+				<p className={styles.success}>Загружаем сохранённые предпочтения...</p>
+			) : null}
+			{preferencesQuery.isError ? (
+				<p className={styles.error}>{loadErrorMessage}</p>
+			) : null}
+
+			<PropertyCriteriaFields
+				criteria={preferences}
+				onCheckboxChange={handleCheckboxChange}
+				onInputChange={handleInputChange}
+			/>
+
+			{updatePreferencesMutation.isError ? (
+				<p className={styles.error}>{saveErrorMessage}</p>
+			) : null}
+			{updatePreferencesMutation.isSuccess ? (
+				<p className={styles.success}>Предпочтения сохранены</p>
+			) : null}
+
+			<Button
+				className={styles.submitButton}
+				fullWidth
+				size='lg'
+				type='submit'
+				disabled={updatePreferencesMutation.isPending || preferencesQuery.isPending}
+			>
+				{updatePreferencesMutation.isPending
+					? 'Сохраняем...'
+					: 'Сохранить предпочтения'}
+			</Button>
+		</form>
 	)
 }
 
 export default Preferences
-

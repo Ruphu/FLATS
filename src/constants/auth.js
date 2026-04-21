@@ -9,6 +9,7 @@ export const loginFields = [
 	{
 		autoComplete: 'current-password',
 		label: 'Password',
+		minLength: 6,
 		name: 'password',
 		placeholder: 'Введите пароль',
 		type: 'password',
@@ -19,7 +20,8 @@ export const loginContent = {
 	alternateLinkLabel: 'Зарегистрироваться',
 	alternateLinkTo: '/register',
 	alternateText: 'Еще нет аккаунта?',
-	description: 'Войдите в аккаунт, используя email и пароль, которые вы указали при регистрации.',
+	description:
+		'Войдите в аккаунт, используя email и пароль, которые вы указали при регистрации.',
 	submitLabel: 'Войти',
 	title: 'Login',
 }
@@ -42,6 +44,7 @@ export const registerFields = [
 	{
 		autoComplete: 'new-password',
 		label: 'Password',
+		minLength: 6,
 		name: 'password',
 		placeholder: 'Придумайте пароль',
 		type: 'password',

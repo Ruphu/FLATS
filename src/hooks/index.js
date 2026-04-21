@@ -1,1 +1,5 @@
 export { default as useAuth } from './useAuth'
+export { default as useLogin } from './useLogin'
+export { default as useMe } from './useMe'
+export { default as usePreferences } from './usePreferences'
+export { default as useRegister } from './useRegister'

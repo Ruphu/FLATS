@@ -1,7 +1,17 @@
 import styles from './RangeInput.module.scss'
 
 const RangeInput = props => {
-	const { title, nameMin, nameMax, valueMin = '', valueMax = '', onChange } = props
+	const {
+		title,
+		nameMin,
+		nameMax,
+		valueMin = '',
+		valueMax = '',
+		onChange,
+		minMin = '0',
+		minMax = '0',
+		step = '1',
+	} = props
 
 	return (
 		<fieldset className={styles.group}>
@@ -10,7 +20,8 @@ const RangeInput = props => {
 				<input
 					type='number'
 					inputMode='numeric'
-					min='0'
+					min={minMin}
+					step={step}
 					placeholder='от'
 					name={nameMin}
 					value={valueMin}
@@ -21,7 +32,8 @@ const RangeInput = props => {
 				<input
 					type='number'
 					inputMode='numeric'
-					min='0'
+					min={minMax}
+					step={step}
 					placeholder='до'
 					name={nameMax}
 					value={valueMax}
