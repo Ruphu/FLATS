@@ -60,54 +60,5 @@ export const CreatePreferencesSchema = BasePreferencesSchema.refine(
     path: ['floorMin'],
   });
 
-export const UpdatePreferencesSchema = BasePreferencesSchema.partial()
-  .refine(
-    (data) => {
-      // Проверяем только если оба поля присутствуют в запросе
-      if (data.budgetMin !== undefined && data.budgetMax !== undefined) {
-        return data.budgetMin <= data.budgetMax;
-      }
-      return true;
-    },
-    {
-      message: 'The minimum budget cannot be more than the maximum',
-      path: ['budgetMin'],
-    },
-  )
-  .refine(
-    (data) => {
-      if (data.areaMin !== undefined && data.areaMax !== undefined) {
-        return data.areaMin <= data.areaMax;
-      }
-      return true;
-    },
-    {
-      message: 'The minimum area cannot be more than the maximum',
-      path: ['areaMin'],
-    },
-  )
-  .refine(
-    (data) => {
-      if (data.floorMin !== undefined && data.floorMax !== undefined) {
-        return data.floorMin <= data.floorMax;
-      }
-      return true;
-    },
-    {
-      message: 'The minimum floor cannot be more than the maximum',
-      path: ['floorMin'],
-    },
-  );
-
 export type CreatePreferencesDTO = z.infer<typeof CreatePreferencesSchema>;
 
-export type UpdatePreferencesDTO = z.infer<typeof UpdatePreferencesSchema>;
-
-export const PreferenceResponseSchema = CreatePreferencesSchema.extend({
-  id: z.uuid(),
-  userId: z.uuid(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
-export type PreferenceResponseDTO = z.infer<typeof PreferenceResponseSchema>;

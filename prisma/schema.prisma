@@ -53,3 +53,49 @@ model Preference {
   @@index([userId])
   @@map("preferences")
 }
+
+model Apartment{
+  id               String   @id @default(uuid())
+
+  title            String
+  images           Image[]
+  description      String?
+  address          String
+
+  price            Int
+  district         String
+  apartmentType    String @map("apartment_type")
+  area             Float
+  roomsCount       Int @map("rooms_count")
+  hasBalcony       Boolean @default(false) @map("has_balcony")
+  hasLoggia        Boolean @default(false) @map("has_loggia")
+  floor            Int
+  houseType        String @map("house_type")
+  minutesToMetro   Int @map("minutes_to_metro")
+  nearestMetro     String @map("nearest_metro")
+
+  
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([price])
+  @@index([roomsCount])
+  @@index([district])
+  @@map("apartments")
+}
+
+model Image {
+  id          String    @id @default(uuid())
+  url         String    
+  order       Int       @default(0) // Порядок отображения (0 - главное)
+  apartmentId String    @map("apartment_id")
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  @@index([apartmentId])
+  @@index([order])
+  @@map("images")
+}
