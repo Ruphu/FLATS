@@ -1,0 +1,61 @@
+.page {
+	min-height: 100vh;
+	background:
+		radial-gradient(
+			circle at top right,
+			rgba(254, 95, 0, 0.12),
+			transparent 24%
+		),
+		linear-gradient(180deg, #ffffff 0%, #fff6ef 100%);
+}
+
+.card {
+	display: flex;
+	justify-content: start;
+	gap: 40px;
+	padding-top: 40px;
+
+	&_info {
+
+	}
+
+	&_title{
+		font-size: 32px;
+		font-weight: 700;
+		padding-bottom: 20px;
+	}
+
+	&_description {
+		padding-bottom: 15px;
+	}
+
+	&_addFav, &_sendMessage {
+		max-width: 250px;
+		margin-bottom: 24px;
+		box-shadow: none !important;
+	}
+
+	&_links {
+
+	}
+
+	&_imgWrapper {
+		max-width: 608px;
+		border-radius: 10%;
+		overflow: hidden;
+		margin-bottom: 20px;
+	}
+
+	&_img {
+	}
+
+	&_price {
+		font-size: 32px;
+		font-weight: 700;
+		padding-bottom: 15px;
+	}
+
+	&_priceMonth {
+		padding-bottom: 15px;
+	}
+}
