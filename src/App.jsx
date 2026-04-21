@@ -1,11 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Home from '@pages/Home';
-import Login from '@pages/Login';
-import Profile from '@pages/Profile';
-import Register from '@pages/Register';
-import Flat from '@pages/Flat';
-import { AuthProvider } from '@shared/api/auth/AuthContext';
-import RequireAuth from '@shared/api/auth/RequireAuth';
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Home from "@pages/Home";
+import Login from "@pages/Login";
+import Profile from "@pages/Profile";
+import Register from "@pages/Register";
+import Flat from "@pages/Flat";
+import { AuthProvider } from "@shared/api/auth/AuthContext";
 
 function App() {
   return (
@@ -16,16 +15,19 @@ function App() {
             <Route element={<Home />} path="/" />
             <Route element={<Login />} path="/login" />
             <Route element={<Register />} path="/register" />
-            <Route element={<Flat />} path="/flat" />
+            <Route element={<Flat />} path="/apartment/:id" />
             <Route
               element={
-               // <RequireAuth>
-                  <Profile />
-               // </RequireAuth>
+                // <RequireAuth>
+                <Profile />
+                // </RequireAuth>
               }
               path="/profile"
             />
-            <Route element={<Navigate replace to="/register" />} path="/registration" />
+            <Route
+              element={<Navigate replace to="/register" />}
+              path="/registration"
+            />
           </Routes>
         </div>
       </BrowserRouter>
@@ -33,4 +35,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

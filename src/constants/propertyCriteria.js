@@ -1,6 +1,6 @@
 export const apartmentTypeOptions = [
-	{ value: 'Новостройка', label: 'Новостройка' },
-	{ value: 'Вторичка', label: 'Вторичка' },
+	{ value: 'new_building', label: 'Новостройка' },
+	{ value: 'secondary', label: 'Вторичка' },
 ]
 
 export const houseTypeOptions = [
@@ -57,7 +57,7 @@ export const criteriaSections = [
 		title: 'Этаж',
 		nameMin: 'floorMin',
 		nameMax: 'floorMax',
-		minMax: '1',
+		minMin: '1',
 	},
 	{
 		type: 'radio',
@@ -85,8 +85,8 @@ export const initialCriteria = {
 	roomsCount: '0',
 	hasBalcony: false,
 	hasLoggia: false,
-	floorMin: '0',
-	floorMax: '1',
+	floorMin: '1',
+	floorMax: '2',
 	houseType: houseTypeOptions[0].value,
 	minutesToMetro: '0',
 }

@@ -4,6 +4,10 @@ export const API_PATHS = {
     register: "/auth/register",
     me: "/auth/me",
   },
+  APARTMENTS: {
+    list: "/apartment",
+    details: (id) => `/apartment/${id}`,
+  },
   USER: {
     preferences: "/user/preferences",
   },

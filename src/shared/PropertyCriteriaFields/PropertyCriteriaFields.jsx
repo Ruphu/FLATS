@@ -31,6 +31,7 @@ const PropertyCriteriaFields = ({ criteria, onCheckboxChange, onInputChange }) =
 						label={section.label}
 						name={section.name}
 						type={section.type}
+						required={false}
 						min={section.min}
 						max={section.max}
 						step={section.step}

@@ -1,61 +1,297 @@
 .page {
 	min-height: 100vh;
 	background:
-		radial-gradient(
-			circle at top right,
-			rgba(254, 95, 0, 0.12),
-			transparent 24%
-		),
-		linear-gradient(180deg, #ffffff 0%, #fff6ef 100%);
+		radial-gradient(circle at top right, rgba(254, 95, 0, 0.14), transparent 24%),
+		linear-gradient(180deg, #fffaf6 0%, #ffffff 48%, #fff5ee 100%);
 }
 
-.card {
+.content {
+	padding: 28px 0 72px;
+}
+
+.breadcrumbs {
 	display: flex;
-	justify-content: start;
-	gap: 40px;
-	padding-top: 40px;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 28px;
+	font-size: 14px;
+	color: var(--color-text-muted);
+}
 
-	&_info {
+.breadcrumbLink {
+	transition: color 0.2s ease;
 
+	&:hover {
+		color: var(--color-primary);
+	}
+}
+
+.breadcrumbCurrent {
+	color: var(--color-text);
+}
+
+.hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.9fr);
+	gap: 28px;
+	align-items: start;
+	margin-bottom: 28px;
+}
+
+.galleryPanel,
+.summaryCard,
+.mainInfo,
+.descriptionCard,
+.stateCard {
+	border: 1px solid rgba(241, 223, 215, 0.92);
+	border-radius: 30px;
+	background: rgba(255, 255, 255, 0.92);
+	box-shadow: var(--shadow-card);
+	backdrop-filter: blur(18px);
+}
+
+.galleryPanel {
+	padding: 20px;
+}
+
+.mainImageWrapper {
+	overflow: hidden;
+	border-radius: 24px;
+	background: var(--color-bg-soft);
+	aspect-ratio: 16 / 11;
+}
+
+.mainImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.thumbnailRow {
+	display: flex;
+	overflow-x: auto;
+	overflow-y: hidden;
+	gap: 12px;
+	margin-top: 16px;
+}
+
+.thumbnailButton {
+	padding: 0;
+	overflow: hidden;
+	min-width: 160px;
+	border: 2px solid transparent;
+	border-radius: 18px;
+	background: var(--color-bg-soft);
+}
+
+.thumbnailButtonActive {
+	border-color: var(--color-primary);
+	box-shadow: 0 12px 26px rgba(254, 95, 0, 0.16);
+}
+
+.thumbnailImage {
+	width: 100%;
+	height: 88px;
+	object-fit: cover;
+}
+
+.summaryCard {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	padding: 28px;
+}
+
+.summaryTop {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.price {
+	font-size: clamp(34px, 4vw, 46px);
+	font-weight: 800;
+	line-height: 0.98;
+	letter-spacing: -0.03em;
+}
+
+.priceMeta {
+	font-size: 16px;
+	line-height: 1.5;
+	color: var(--color-text-muted);
+}
+
+.actionGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.locationBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 18px;
+	border-radius: 22px;
+	background: linear-gradient(180deg, #fff8f1 0%, #fffdfb 100%);
+}
+
+.locationLabel,
+.specLabel {
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+.locationValue,
+.specValue {
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--color-text);
+}
+
+.metro {
+	font-size: 15px;
+	line-height: 1.5;
+	color: var(--color-primary);
+}
+
+.badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.badge {
+	padding: 10px 14px;
+	border-radius: 999px;
+	background: var(--color-bg-soft);
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--color-text-secondary);
+}
+
+.publishDate {
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--color-text-muted);
+}
+
+.infoGrid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+	gap: 28px;
+}
+
+.mainInfo,
+.descriptionCard {
+	padding: 28px;
+}
+
+.titleBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.title {
+	font-size: clamp(30px, 4vw, 42px);
+	font-weight: 800;
+	line-height: 1.06;
+	letter-spacing: -0.03em;
+}
+
+.subtitle {
+	font-size: 18px;
+	line-height: 1.5;
+	color: var(--color-text-muted);
+}
+
+.specGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.specCard {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 18px;
+	border-radius: 24px;
+	background: linear-gradient(180deg, #fffdfc 0%, #fff7f1 100%);
+	border: 1px solid rgba(241, 223, 215, 0.76);
+}
+
+.sectionTitle {
+	margin-bottom: 18px;
+	font-size: 24px;
+	font-weight: 800;
+	line-height: 1.1;
+}
+
+.description {
+	font-size: 16px;
+	line-height: 1.72;
+	color: var(--color-text-secondary);
+	white-space: pre-line;
+}
+
+.stateCard {
+	padding: 36px;
+}
+
+.stateTitle {
+	margin-bottom: 12px;
+	font-size: 32px;
+	font-weight: 800;
+	line-height: 1.1;
+}
+
+.stateText {
+	max-width: 640px;
+	font-size: 17px;
+	line-height: 1.6;
+	color: var(--color-text-muted);
+}
+
+@media (max-width: 1120px) {
+	.hero,
+	.infoGrid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 768px) {
+	.content {
+		padding: 20px 0 48px;
 	}
 
-	&_title{
-		font-size: 32px;
-		font-weight: 700;
-		padding-bottom: 20px;
+	.galleryPanel,
+	.summaryCard,
+	.mainInfo,
+	.descriptionCard,
+	.stateCard {
+		padding: 20px;
+		border-radius: 24px;
 	}
 
-	&_description {
-		padding-bottom: 15px;
+	.title,
+	.price,
+	.stateTitle {
+		font-size: 28px;
 	}
 
-	&_addFav, &_sendMessage {
-		max-width: 250px;
-		margin-bottom: 24px;
-		box-shadow: none !important;
+	.specGrid {
+		grid-template-columns: 1fr;
 	}
 
-	&_links {
-
-	}
-
-	&_imgWrapper {
-		max-width: 608px;
-		border-radius: 10%;
-		overflow: hidden;
-		margin-bottom: 20px;
-	}
-
-	&_img {
-	}
-
-	&_price {
-		font-size: 32px;
-		font-weight: 700;
-		padding-bottom: 15px;
-	}
-
-	&_priceMonth {
-		padding-bottom: 15px;
+	.thumbnailRow {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 }
