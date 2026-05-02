@@ -12,7 +12,13 @@ const Card = ({
   price = 0,
   area,
   roomsCount,
+  rank,
+  score,
+  isFavorite = false,
+  isCompared = false,
   onDetailsClick,
+  onFavoriteToggle,
+  onCompareToggle,
 }) => {
   const specs = [
     area ? `${area} м²` : null,
@@ -27,6 +33,8 @@ const Card = ({
     onDetailsClick?.(id);
   };
 
+  const scorePercent = score || score === 0 ? Math.round(score * 100) : null;
+
   return (
     <article className={styles.card}>
       <div className={styles.media}>
@@ -35,6 +43,7 @@ const Card = ({
           className={styles.image}
           src={image || fallbackCardImage}
         />
+        {rank ? <span className={styles.rank}>#{rank}</span> : null}
         {specs.length > 0 && (
           <div className={styles.badges}>
             {specs.map((spec) => (
@@ -50,6 +59,12 @@ const Card = ({
         <div className={styles.header}>
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.address}>{address}</p>
+          {scorePercent !== null ? (
+            <div className={styles.score}>
+              <span>Соответствие</span>
+              <strong>{scorePercent}%</strong>
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.footer}>
@@ -61,6 +76,23 @@ const Card = ({
             variant="soft"
           >
             Подробнее
+          </Button>
+        </div>
+
+        <div className={styles.secondaryActions}>
+          <Button
+            fullWidth
+            onClick={() => onFavoriteToggle?.(id)}
+            variant={isFavorite ? "primary" : "secondary"}
+          >
+            {isFavorite ? "В избранном" : "В избранное"}
+          </Button>
+          <Button
+            fullWidth
+            onClick={() => onCompareToggle?.(id)}
+            variant={isCompared ? "primary" : "secondary"}
+          >
+            {isCompared ? "Сравнивается" : "Сравнить"}
           </Button>
         </div>
       </div>

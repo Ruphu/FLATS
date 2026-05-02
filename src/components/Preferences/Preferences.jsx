@@ -66,7 +66,7 @@ const Preferences = () => {
 			<h3 className={styles.title}>Предпочтения</h3>
 
 			{preferencesQuery.isPending ? (
-				<p className={styles.success}>Загружаем сохранённые предпочтения...</p>
+				<p className={styles.success}>Загружаем сохраненные предпочтения...</p>
 			) : null}
 			{preferencesQuery.isError ? (
 				<p className={styles.error}>{loadErrorMessage}</p>

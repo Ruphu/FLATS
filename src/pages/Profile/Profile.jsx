@@ -27,10 +27,10 @@ const Profile = () => {
 
 			<Container>
 				<section className={styles.card}>
-					<p className={styles.kicker}>Protected route</p>
+					<p className={styles.kicker}>Профиль пользователя</p>
 					<h1 className={styles.title}>Профиль</h1>
 					<p className={styles.description}>
-						Здесь отображается информация о вашем профиле.
+						Эти данные используются backend2 для расчета TOPSIS-рекомендаций.
 					</p>
 
 					{meQuery.isPending ? (

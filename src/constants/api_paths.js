@@ -7,8 +7,13 @@ export const API_PATHS = {
   APARTMENTS: {
     list: "/apartment",
     details: (id) => `/apartment/${id}`,
+    recommendations: "/apartment/recommendations",
+    recommendationCriteria: "/apartment/recommendations/criteria",
+    compare: "/apartment/compare",
   },
   USER: {
     preferences: "/user/preferences",
+    favorites: "/user/favorites",
+    favoriteDetails: (id) => `/user/favorites/${id}`,
   },
 };

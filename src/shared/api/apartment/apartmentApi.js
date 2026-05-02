@@ -6,6 +6,10 @@ const isRecord = (value) =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 
 const extractImageUrl = (url) => {
+  if (!url) {
+    return null;
+  }
+
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
@@ -26,13 +30,14 @@ const buildApartmentTitle = (apartment) => {
   return area ? `${roomLabel}, ${area} м²` : roomLabel;
 };
 
-const normalizeApartment = (apartment) => {
+export const normalizeApartment = (apartment) => {
   if (!isRecord(apartment)) {
     return null;
   }
 
-  const normalizedImages = apartment.images
-    .map(({url}) => extractImageUrl(url))
+  const imageItems = Array.isArray(apartment.images) ? apartment.images : [];
+  const normalizedImages = imageItems
+    .map((image) => extractImageUrl(typeof image === "string" ? image : image.url))
     .filter(Boolean);
   const primaryImage = normalizedImages[0] ?? null;
 
@@ -72,8 +77,47 @@ const extractApartment = (response) => {
   return response.item ?? response.data ?? response.apartment ?? response;
 };
 
+const recommendationPayload = (options = {}) => ({
+  weights: options.weights,
+  onlyMatching: Boolean(options.onlyMatching),
+});
+
 export const getApartmentsRequest = async () => {
   const response = await apiClient(API_PATHS.APARTMENTS.list);
+  return extractApartments(response).map(normalizeApartment).filter(Boolean);
+};
+
+export const getRecommendedApartmentsRequest = async (options = {}) => {
+  const response = await apiClient(API_PATHS.APARTMENTS.recommendations, {
+    method: "POST",
+    body: recommendationPayload(options),
+  });
+
+  return extractApartments(response)
+    .map((item) => {
+      const apartment = normalizeApartment(item.apartment ?? item);
+      if (!apartment) {
+        return null;
+      }
+
+      return {
+        ...apartment,
+        rank: item.rank,
+        score: item.score,
+        criteriaScores: item.criteriaScores,
+        weights: item.weights,
+      };
+    })
+    .filter(Boolean);
+};
+
+export const getRecommendationCriteriaRequest = () =>
+  apiClient(API_PATHS.APARTMENTS.recommendationCriteria);
+
+export const compareApartmentsRequest = async (ids) => {
+  const query = new URLSearchParams();
+  ids.forEach((id) => query.append("ids", id));
+  const response = await apiClient(`${API_PATHS.APARTMENTS.compare}?${query}`);
   return extractApartments(response).map(normalizeApartment).filter(Boolean);
 };
 

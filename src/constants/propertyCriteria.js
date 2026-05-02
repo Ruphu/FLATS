@@ -22,7 +22,7 @@ export const criteriaSections = [
 		name: 'preferredDistrict',
 		minLength: 2,
 		maxLength: 100,
-		placeholder: 'Например, Хамовники',
+		placeholder: 'Например, Петроградский',
 	},
 	{
 		type: 'radio',
