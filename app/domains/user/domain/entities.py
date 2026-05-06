@@ -21,6 +21,10 @@ class Preference:
     floor_max: int
     house_type: str
     minutes_to_metro: int
+    wants_shops_nearby: bool = False
+    wants_schools_nearby: bool = False
+    wants_kindergartens_nearby: bool = False
+    wants_parks_nearby: bool = False
     created_at: datetime | None = None
     updated_at: datetime | None = None
 

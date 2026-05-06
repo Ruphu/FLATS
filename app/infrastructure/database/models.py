@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy import UniqueConstraint
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.domains.apartment.domain.value_objects import ApartmentType
@@ -57,6 +58,26 @@ class PreferenceModel(Base):
     floor_max: Mapped[int] = mapped_column('floor_max', Integer)
     house_type: Mapped[str] = mapped_column('house_type', String)
     minutes_to_metro: Mapped[int] = mapped_column('minutes_to_metro', Integer)
+    wants_shops_nearby: Mapped[bool] = mapped_column(
+        'wants_shops_nearby',
+        Boolean,
+        default=False,
+    )
+    wants_schools_nearby: Mapped[bool] = mapped_column(
+        'wants_schools_nearby',
+        Boolean,
+        default=False,
+    )
+    wants_kindergartens_nearby: Mapped[bool] = mapped_column(
+        'wants_kindergartens_nearby',
+        Boolean,
+        default=False,
+    )
+    wants_parks_nearby: Mapped[bool] = mapped_column(
+        'wants_parks_nearby',
+        Boolean,
+        default=False,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -87,6 +108,22 @@ class ApartmentModel(Base):
     house_type: Mapped[str] = mapped_column('house_type', String, nullable=False)
     minutes_to_metro: Mapped[int] = mapped_column('minutes_to_metro', Integer, nullable=False)
     nearest_metro: Mapped[str] = mapped_column('nearest_metro', String, nullable=False)
+    condition_score: Mapped[float] = mapped_column('condition_score', Float, default=0.7)
+    transport_accessibility: Mapped[int] = mapped_column(
+        'transport_accessibility',
+        Integer,
+        default=70,
+    )
+    shops_nearby: Mapped[bool] = mapped_column('shops_nearby', Boolean, default=False)
+    schools_nearby: Mapped[bool] = mapped_column('schools_nearby', Boolean, default=False)
+    kindergartens_nearby: Mapped[bool] = mapped_column(
+        'kindergartens_nearby',
+        Boolean,
+        default=False,
+    )
+    parks_nearby: Mapped[bool] = mapped_column('parks_nearby', Boolean, default=False)
+    latitude: Mapped[float | None] = mapped_column('latitude', Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column('longitude', Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -154,3 +191,38 @@ class FavoriteApartmentModel(Base):
         Index('favorite_apartments_user_id_idx', 'user_id'),
         Index('favorite_apartments_apartment_id_idx', 'apartment_id'),
     )
+
+
+def ensure_schema_compatibility(engine: Engine) -> None:
+    if engine.dialect.name != 'sqlite':
+        return
+
+    table_columns = {
+        'apartments': {
+            'condition_score': 'FLOAT DEFAULT 0.7',
+            'transport_accessibility': 'INTEGER DEFAULT 70',
+            'shops_nearby': 'BOOLEAN DEFAULT 0',
+            'schools_nearby': 'BOOLEAN DEFAULT 0',
+            'kindergartens_nearby': 'BOOLEAN DEFAULT 0',
+            'parks_nearby': 'BOOLEAN DEFAULT 0',
+            'latitude': 'FLOAT',
+            'longitude': 'FLOAT',
+        },
+        'preferences': {
+            'wants_shops_nearby': 'BOOLEAN DEFAULT 0',
+            'wants_schools_nearby': 'BOOLEAN DEFAULT 0',
+            'wants_kindergartens_nearby': 'BOOLEAN DEFAULT 0',
+            'wants_parks_nearby': 'BOOLEAN DEFAULT 0',
+        },
+    }
+
+    with engine.begin() as connection:
+        for table_name, columns_to_add in table_columns.items():
+            existing_columns = {
+                row[1] for row in connection.exec_driver_sql(f'PRAGMA table_info({table_name})')
+            }
+            for column_name, column_definition in columns_to_add.items():
+                if column_name not in existing_columns:
+                    connection.exec_driver_sql(
+                        f'ALTER TABLE {table_name} ADD COLUMN {column_name} {column_definition}'
+                    )

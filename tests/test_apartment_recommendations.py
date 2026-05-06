@@ -55,6 +55,10 @@ def make_apartment(
         house_type='Кирпичный',
         minutes_to_metro=minutes_to_metro,
         nearest_metro='Петроградская',
+        transport_accessibility=85,
+        shops_nearby=True,
+        schools_nearby=True,
+        parks_nearby=True,
     )
 
 

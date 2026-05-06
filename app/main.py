@@ -15,7 +15,11 @@ from app.domains.apartment.presentation.router import router as apartment_router
 from app.domains.auth.presentation.router import router as auth_router
 from app.domains.user.presentation.router import router as user_router
 from app.infrastructure.database import models
-from app.infrastructure.database.session import Base, engine
+from app.infrastructure.database.session import Base, SessionLocal, engine
+from app.infrastructure.repositories.sqlalchemy_apartment_repository import (
+    SqlAlchemyApartmentRepository,
+)
+from app.infrastructure.sources.demo_apartment_source import seed_demo_apartments
 
 settings = get_settings()
 
@@ -35,6 +39,12 @@ app.mount('/public', StaticFiles(directory='public', check_dir=False), name='pub
 @app.on_event('startup')
 def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
+    models.ensure_schema_compatibility(engine)
+    session = SessionLocal()
+    try:
+        seed_demo_apartments(SqlAlchemyApartmentRepository(session))
+    finally:
+        session.close()
 
 
 @app.exception_handler(DomainError)

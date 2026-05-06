@@ -26,6 +26,14 @@ class ApartmentRequest(BaseModel):
     houseType: str
     minutesToMetro: int = Field(ge=0, le=120)
     nearestMetro: str
+    conditionScore: float = Field(default=0.7, ge=0, le=1)
+    transportAccessibility: int = Field(default=70, ge=0, le=100)
+    shopsNearby: bool = False
+    schoolsNearby: bool = False
+    kindergartensNearby: bool = False
+    parksNearby: bool = False
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
     images: list[ImageSchema] = Field(default_factory=list)
 
     @field_validator('nearestMetro')

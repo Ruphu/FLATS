@@ -39,6 +39,10 @@ class SqlAlchemyPreferenceRepository:
         model.floor_max = preference.floor_max
         model.house_type = preference.house_type
         model.minutes_to_metro = preference.minutes_to_metro
+        model.wants_shops_nearby = preference.wants_shops_nearby
+        model.wants_schools_nearby = preference.wants_schools_nearby
+        model.wants_kindergartens_nearby = preference.wants_kindergartens_nearby
+        model.wants_parks_nearby = preference.wants_parks_nearby
 
         self._session.commit()
         self._session.refresh(model)
@@ -72,6 +76,10 @@ class SqlAlchemyPreferenceRepository:
             floor_max=model.floor_max,
             house_type=model.house_type,
             minutes_to_metro=model.minutes_to_metro,
+            wants_shops_nearby=bool(model.wants_shops_nearby),
+            wants_schools_nearby=bool(model.wants_schools_nearby),
+            wants_kindergartens_nearby=bool(model.wants_kindergartens_nearby),
+            wants_parks_nearby=bool(model.wants_parks_nearby),
             created_at=model.created_at,
             updated_at=model.updated_at,
         )

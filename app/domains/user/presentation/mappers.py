@@ -21,6 +21,10 @@ def preference_from_request(user_id: str, payload: PreferenceRequest) -> Prefere
         floor_max=payload.floorMax,
         house_type=payload.houseType,
         minutes_to_metro=payload.minutesToMetro,
+        wants_shops_nearby=payload.wantsShopsNearby,
+        wants_schools_nearby=payload.wantsSchoolsNearby,
+        wants_kindergartens_nearby=payload.wantsKindergartensNearby,
+        wants_parks_nearby=payload.wantsParksNearby,
     )
 
 
@@ -41,4 +45,8 @@ def preference_to_response(preference: Preference) -> PreferenceResponse:
         floorMax=preference.floor_max,
         houseType=preference.house_type,
         minutesToMetro=preference.minutes_to_metro,
+        wantsShopsNearby=preference.wants_shops_nearby,
+        wantsSchoolsNearby=preference.wants_schools_nearby,
+        wantsKindergartensNearby=preference.wants_kindergartens_nearby,
+        wantsParksNearby=preference.wants_parks_nearby,
     )

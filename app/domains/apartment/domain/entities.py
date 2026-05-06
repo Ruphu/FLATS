@@ -36,6 +36,14 @@ class Apartment:
     description: str | None = ''
     has_balcony: bool = False
     has_loggia: bool = False
+    condition_score: float = 0.7
+    transport_accessibility: int = 70
+    shops_nearby: bool = False
+    schools_nearby: bool = False
+    kindergartens_nearby: bool = False
+    parks_nearby: bool = False
+    latitude: float | None = None
+    longitude: float | None = None
     images: list[Image] = field(default_factory=list)
     created_at: datetime | None = None
     updated_at: datetime | None = None
@@ -53,6 +61,10 @@ class Apartment:
             raise ValidationError('The floor cannot be negative')
         if self.minutes_to_metro < 0:
             raise ValidationError('Minutes to metro cannot be negative')
+        if not 0 <= self.condition_score <= 1:
+            raise ValidationError('Condition score must be between 0 and 1')
+        if not 0 <= self.transport_accessibility <= 100:
+            raise ValidationError('Transport accessibility must be between 0 and 100')
         if self.house_type not in HOUSE_TYPES:
             raise ValidationError('Invalid house type')
         if self.nearest_metro not in METRO_STATIONS:

@@ -28,6 +28,14 @@ class SqlAlchemyApartmentRepository:
         model.house_type = apartment.house_type
         model.minutes_to_metro = apartment.minutes_to_metro
         model.nearest_metro = apartment.nearest_metro
+        model.condition_score = apartment.condition_score
+        model.transport_accessibility = apartment.transport_accessibility
+        model.shops_nearby = apartment.shops_nearby
+        model.schools_nearby = apartment.schools_nearby
+        model.kindergartens_nearby = apartment.kindergartens_nearby
+        model.parks_nearby = apartment.parks_nearby
+        model.latitude = apartment.latitude
+        model.longitude = apartment.longitude
         model.images = [
             ImageModel(url=image.url, order=image.order) for image in apartment.images
         ]
@@ -96,6 +104,14 @@ class SqlAlchemyApartmentRepository:
             house_type=model.house_type,
             minutes_to_metro=model.minutes_to_metro,
             nearest_metro=model.nearest_metro,
+            condition_score=model.condition_score or 0.7,
+            transport_accessibility=model.transport_accessibility or 70,
+            shops_nearby=bool(model.shops_nearby),
+            schools_nearby=bool(model.schools_nearby),
+            kindergartens_nearby=bool(model.kindergartens_nearby),
+            parks_nearby=bool(model.parks_nearby),
+            latitude=model.latitude,
+            longitude=model.longitude,
             images=[Image(url=image.url, order=image.order) for image in model.images],
             created_at=model.created_at,
             updated_at=model.updated_at,

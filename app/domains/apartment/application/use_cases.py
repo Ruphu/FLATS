@@ -162,12 +162,9 @@ class ApartmentUseCases:
             'area': self._closeness(apartment.area, target_area),
             'rooms': self._closeness(apartment.rooms_count, preference.rooms_count),
             'district': self._match(apartment.district, preference.preferred_district),
-            'transport': self._closeness(
-                apartment.minutes_to_metro,
-                preference.minutes_to_metro,
-            ),
-            'infrastructure': self._infrastructure_score(apartment),
-            'condition': 0.7,
+            'transport': self._transport_score(apartment, preference),
+            'infrastructure': self._infrastructure_score(apartment, preference),
+            'condition': apartment.condition_score,
             'house_type': self._match(apartment.house_type, preference.house_type),
             'floor': self._closeness(apartment.floor, target_floor),
             'balcony_loggia': (balcony_matches + loggia_matches) / 2,
@@ -234,14 +231,30 @@ class ApartmentUseCases:
         return 1.0 if value.strip().lower() == target.strip().lower() else 0.0
 
     @staticmethod
-    def _infrastructure_score(apartment: Apartment) -> float:
-        if apartment.minutes_to_metro <= 5:
-            return 1.0
-        if apartment.minutes_to_metro <= 15:
-            return 0.75
-        if apartment.minutes_to_metro <= 30:
-            return 0.45
-        return 0.2
+    def _infrastructure_score(apartment: Apartment, preference: Preference) -> float:
+        desired_pairs = (
+            (preference.wants_shops_nearby, apartment.shops_nearby),
+            (preference.wants_schools_nearby, apartment.schools_nearby),
+            (preference.wants_kindergartens_nearby, apartment.kindergartens_nearby),
+            (preference.wants_parks_nearby, apartment.parks_nearby),
+        )
+        required = [available for desired, available in desired_pairs if desired]
+        if required:
+            base_score = sum(1 for available in required if available) / len(required)
+        else:
+            base_score = sum(1 for _, available in desired_pairs if available) / len(desired_pairs)
+        metro_bonus = 0.2 if apartment.minutes_to_metro <= 10 else 0
+        return min(base_score + metro_bonus, 1.0)
+
+    @staticmethod
+    def _transport_score(apartment: Apartment, preference: Preference) -> float:
+        metro_score = 1.0 if apartment.minutes_to_metro <= preference.minutes_to_metro else (
+            preference.minutes_to_metro / apartment.minutes_to_metro
+            if apartment.minutes_to_metro
+            else 1.0
+        )
+        accessibility_score = apartment.transport_accessibility / 100
+        return min((metro_score * 0.7) + (accessibility_score * 0.3), 1.0)
 
     @staticmethod
     def _euclidean_distance(

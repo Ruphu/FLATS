@@ -17,6 +17,10 @@ class PreferenceRequest(BaseModel):
     floorMax: int = Field(ge=1)
     houseType: str
     minutesToMetro: int = Field(ge=0, le=120)
+    wantsShopsNearby: bool = False
+    wantsSchoolsNearby: bool = False
+    wantsKindergartensNearby: bool = False
+    wantsParksNearby: bool = False
 
     @model_validator(mode='after')
     def validate_ranges(self) -> 'PreferenceRequest':
