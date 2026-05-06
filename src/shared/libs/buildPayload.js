@@ -18,6 +18,10 @@ const criteriaBuilders = {
 		floorMax: toNumberValue(criteria.floorMax),
 		houseType: criteria.houseType,
 		minutesToMetro: toNumberValue(criteria.minutesToMetro),
+		wantsShopsNearby: Boolean(criteria.wantsShopsNearby),
+		wantsSchoolsNearby: Boolean(criteria.wantsSchoolsNearby),
+		wantsKindergartensNearby: Boolean(criteria.wantsKindergartensNearby),
+		wantsParksNearby: Boolean(criteria.wantsParksNearby),
 	}),
 	form: criteria => ({
 		...initialCriteria,
@@ -37,6 +41,10 @@ const criteriaBuilders = {
 		minutesToMetro: toStringValue(
 			criteria?.minutesToMetro ?? initialCriteria.minutesToMetro,
 		),
+		wantsShopsNearby: Boolean(criteria?.wantsShopsNearby),
+		wantsSchoolsNearby: Boolean(criteria?.wantsSchoolsNearby),
+		wantsKindergartensNearby: Boolean(criteria?.wantsKindergartensNearby),
+		wantsParksNearby: Boolean(criteria?.wantsParksNearby),
 	}),
 }
 

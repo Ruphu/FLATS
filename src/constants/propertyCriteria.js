@@ -73,6 +73,16 @@ export const criteriaSections = [
 		max: '120',
 		step: '1',
 	},
+	{
+		type: 'checkbox',
+		title: 'Инфраструктура рядом',
+		options: [
+			{ name: 'wantsShopsNearby', label: 'Магазины' },
+			{ name: 'wantsSchoolsNearby', label: 'Школы' },
+			{ name: 'wantsKindergartensNearby', label: 'Детские сады' },
+			{ name: 'wantsParksNearby', label: 'Парки' },
+		],
+	},
 ]
 
 export const initialCriteria = {
@@ -89,4 +99,8 @@ export const initialCriteria = {
 	floorMax: '2',
 	houseType: houseTypeOptions[0].value,
 	minutesToMetro: '0',
+	wantsShopsNearby: false,
+	wantsSchoolsNearby: false,
+	wantsKindergartensNearby: false,
+	wantsParksNearby: false,
 }

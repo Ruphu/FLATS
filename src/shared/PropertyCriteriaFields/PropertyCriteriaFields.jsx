@@ -4,7 +4,12 @@ import RangeInput from '@shared/RangeInput'
 import { criteriaSections } from '@constants/propertyCriteria'
 import styles from './PropertyCriteriaFields.module.scss'
 
-const PropertyCriteriaFields = ({ criteria, onCheckboxChange, onInputChange }) => {
+const PropertyCriteriaFields = ({
+	criteria,
+	onCheckboxChange,
+	onInputChange,
+	sections = criteriaSections,
+}) => {
 	const renderSection = section => {
 		if (section.type === 'range') {
 			return (
@@ -92,7 +97,7 @@ const PropertyCriteriaFields = ({ criteria, onCheckboxChange, onInputChange }) =
 		)
 	}
 
-	return <div className={styles.sections}>{criteriaSections.map(renderSection)}</div>
+	return <div className={styles.sections}>{sections.map(renderSection)}</div>
 }
 
 export default PropertyCriteriaFields

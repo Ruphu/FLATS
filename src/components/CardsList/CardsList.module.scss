@@ -3,6 +3,21 @@
 	min-width: 0;
 }
 
+.resultBar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 18px;
+	padding: 14px 18px;
+	border: 1px solid var(--color-border-soft);
+	border-radius: var(--radius-button);
+	background: rgba(255, 255, 255, 0.9);
+	color: var(--color-text-muted);
+	font-weight: 700;
+}
+
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

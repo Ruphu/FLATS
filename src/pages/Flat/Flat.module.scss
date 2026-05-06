@@ -43,6 +43,7 @@
 .summaryCard,
 .mainInfo,
 .descriptionCard,
+.mapCard,
 .stateCard {
 	border: 1px solid rgba(241, 223, 215, 0.92);
 	border-radius: 30px;
@@ -188,8 +189,34 @@
 }
 
 .mainInfo,
-.descriptionCard {
+.descriptionCard,
+.mapCard {
 	padding: 28px;
+}
+
+.mapCard {
+	grid-column: 1 / -1;
+}
+
+.mapHeader {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	margin-bottom: 18px;
+}
+
+.mapLink {
+	font-weight: 800;
+	color: var(--color-primary);
+}
+
+.mapFrame {
+	width: 100%;
+	min-height: 380px;
+	border: 0;
+	border-radius: 24px;
+	background: var(--color-bg-soft);
 }
 
 .titleBlock {
@@ -276,6 +303,7 @@
 	.summaryCard,
 	.mainInfo,
 	.descriptionCard,
+	.mapCard,
 	.stateCard {
 		padding: 20px;
 		border-radius: 24px;
@@ -293,5 +321,13 @@
 
 	.thumbnailRow {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.mapHeader {
+		flex-direction: column;
+	}
+
+	.mapFrame {
+		min-height: 300px;
 	}
 }

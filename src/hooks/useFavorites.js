@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import useAuth from '@hooks/useAuth'
 import {
 	addFavoriteRequest,
 	deleteFavoriteRequest,
@@ -7,9 +8,11 @@ import {
 
 const useFavorites = () => {
 	const queryClient = useQueryClient()
+	const { isAuthenticated } = useAuth()
 	const favoritesQuery = useQuery({
 		queryKey: ['user', 'favorites'],
 		queryFn: getFavoritesRequest,
+		enabled: isAuthenticated,
 		retry: false,
 	})
 
@@ -26,9 +29,10 @@ const useFavorites = () => {
 	})
 
 	return {
-		favoritesQuery,
 		addFavoriteMutation,
 		deleteFavoriteMutation,
+		favoritesQuery,
+		isAuthenticated,
 	}
 }
 

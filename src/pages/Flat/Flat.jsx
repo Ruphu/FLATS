@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fallbackCardImage } from '@constants/card'
 import useApartment from '@hooks/useApartment'
@@ -60,7 +60,7 @@ const formatMetro = (nearestMetro, minutesToMetro) => {
 	return nearestMetro
 }
 
-const buildGallery = (apartment) => {
+const buildGallery = apartment => {
 	if (!apartment) {
 		return [fallbackCardImage]
 	}
@@ -71,6 +71,30 @@ const buildGallery = (apartment) => {
 	].filter(Boolean)
 
 	return images.length > 0 ? [...new Set(images)] : [fallbackCardImage]
+}
+
+const buildYandexMapUrl = apartment => {
+	if (apartment?.latitude && apartment?.longitude) {
+		return `https://yandex.ru/maps/?pt=${apartment.longitude},${apartment.latitude}&z=16&l=map`
+	}
+
+	if (apartment?.address) {
+		return `https://yandex.ru/maps/?text=${encodeURIComponent(apartment.address)}`
+	}
+
+	return 'https://yandex.ru/maps/'
+}
+
+const buildYandexMapEmbedUrl = apartment => {
+	if (apartment?.latitude && apartment?.longitude) {
+		return `https://yandex.ru/map-widget/v1/?ll=${apartment.longitude},${apartment.latitude}&z=15&pt=${apartment.longitude},${apartment.latitude},pm2rdm`
+	}
+
+	if (apartment?.address) {
+		return `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(apartment.address)}&z=15`
+	}
+
+	return 'https://yandex.ru/map-widget/v1/'
 }
 
 const Flat = () => {
@@ -84,6 +108,8 @@ const Flat = () => {
 
 	const gallery = buildGallery(apartment)
 	const activeImage = gallery[activeImageIndex] ?? gallery[0]
+	const mapUrl = useMemo(() => buildYandexMapUrl(apartment), [apartment])
+	const mapEmbedUrl = useMemo(() => buildYandexMapEmbedUrl(apartment), [apartment])
 	const pricePerSquareMeter =
 		apartment?.price && apartment?.area
 			? Math.round(apartment.price / apartment.area)
@@ -92,6 +118,12 @@ const Flat = () => {
 		apartment?.district,
 		apartment?.apartmentType === 'secondary' ? 'Вторичка' : 'Новостройка',
 		apartment?.houseType,
+	].filter(Boolean)
+	const infrastructure = [
+		apartment?.shopsNearby ? 'Магазины рядом' : null,
+		apartment?.schoolsNearby ? 'Школы рядом' : null,
+		apartment?.kindergartensNearby ? 'Детские сады рядом' : null,
+		apartment?.parksNearby ? 'Парки рядом' : null,
 	].filter(Boolean)
 	const details = [
 		{ label: 'Площадь', value: formatArea(apartment?.area) },
@@ -108,6 +140,14 @@ const Flat = () => {
 		{
 			label: 'Метро',
 			value: formatMetro(apartment?.nearestMetro, apartment?.minutesToMetro),
+		},
+		{
+			label: 'Транспорт',
+			value: `${apartment?.transportAccessibility ?? 70}/100`,
+		},
+		{
+			label: 'Состояние',
+			value: `${Math.round((apartment?.conditionScore ?? 0.7) * 100)}%`,
 		},
 	]
 
@@ -129,7 +169,7 @@ const Flat = () => {
 
 					{isLoading ? (
 						<div className={styles.stateCard}>
-							<h1 className={styles.stateTitle}>Загружаем квартиру…</h1>
+							<h1 className={styles.stateTitle}>Загружаем квартиру...</h1>
 							<p className={styles.stateText}>
 								Сейчас подтянем фотографии, характеристики и описание.
 							</p>
@@ -138,14 +178,14 @@ const Flat = () => {
 						<div className={styles.stateCard}>
 							<h1 className={styles.stateTitle}>Не удалось открыть квартиру</h1>
 							<p className={styles.stateText}>
-								{error?.message ?? 'Попробуй обновить страницу чуть позже.'}
+								{error?.message ?? 'Попробуйте обновить страницу чуть позже.'}
 							</p>
 						</div>
 					) : !apartment ? (
 						<div className={styles.stateCard}>
 							<h1 className={styles.stateTitle}>Квартира не найдена</h1>
 							<p className={styles.stateText}>
-								Возможно, объявление было удалено или ссылка устарела.
+								Возможно, объявление удалено или ссылка устарела.
 							</p>
 						</div>
 					) : (
@@ -199,6 +239,14 @@ const Flat = () => {
 										<Button fullWidth size='lg' variant='secondary'>
 											Сохранить в избранное
 										</Button>
+										<Button
+											fullWidth
+											size='lg'
+											variant='secondary'
+											onClick={() => window.open(mapUrl, '_blank', 'noopener,noreferrer')}
+										>
+											Открыть на Яндекс.Картах
+										</Button>
 									</div>
 
 									<div className={styles.locationBlock}>
@@ -244,6 +292,35 @@ const Flat = () => {
 											</div>
 										))}
 									</div>
+								</div>
+
+								<div className={styles.descriptionCard}>
+									<h2 className={styles.sectionTitle}>Инфраструктура</h2>
+									<p className={styles.description}>
+										{infrastructure.length
+											? infrastructure.join(', ')
+											: 'Инфраструктура района пока не заполнена.'}
+									</p>
+								</div>
+
+								<div className={styles.mapCard}>
+									<div className={styles.mapHeader}>
+										<h2 className={styles.sectionTitle}>Местоположение</h2>
+										<a
+											className={styles.mapLink}
+											href={mapUrl}
+											target='_blank'
+											rel='noreferrer'
+										>
+											Открыть в Яндекс.Картах
+										</a>
+									</div>
+									<iframe
+										className={styles.mapFrame}
+										src={mapEmbedUrl}
+										title={`Карта: ${apartment.title}`}
+										loading='lazy'
+									/>
 								</div>
 
 								<div className={styles.descriptionCard}>
