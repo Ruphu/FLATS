@@ -1,70 +1,82 @@
-# Getting Started with Create React App
+# FLATS — подбор квартир (TOPSIS + МАИ)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Веб-сервис для ранжирования объявлений о квартирах по профилю пользователя: метод **TOPSIS** для оценки альтернатив и **метод анализа иерархий (МАИ / AHP)** для расчёта весов критериев (в том числе через матрицу парных сравнений на бэкенде).
 
-## Available Scripts
+## Возможности
 
-In the project directory, you can run:
+- Регистрация и вход (JWT), профиль и **редактируемые предпочтения** (район, тип жилья, площадь, комнаты, этаж, дом, метро, инфраструктура, балкон/лоджия).
+- Каталог квартир с **фильтрами**, режим **TOPSIS** (ранг и балл соответствия), **избранное**, **сравнение** до 4 объектов.
+- Задание весов: пресеты (в том числе **«Равные веса»**), ручные ползунки; на API по-прежнему можно передать **матрицу МАИ 10×10** (`pairwiseMatrix`), если нужен полный AHP.
+- Карточка квартиры с галереей и **встроенной картой** (Яндекс).
+- Данные: демо-генерация при старте; **Яндекс.Геокодер** для координат (в коде есть ключ по умолчанию для локального запуска; для продакшена задайте `YANDEX_GEOCODER_API_KEY`). Интеграции ЦИАН/Авито в ТЗ рекомендованы как расширение — см. раздел «Соответствие ТЗ».
 
-### `npm start`
+## Архитектура
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Backend:** Python 3.12+, FastAPI, SQLAlchemy 2, Pydantic. Структура по слоям **DDD**: `domain` (сущности, репозитории), `application` (use cases), `infrastructure` (SQLAlchemy, внешние источники), `presentation` (роутеры, схемы).
+- **События:** шина `subscribe` / `publish`. Обработчики при старте **сохраняют каждое событие в таблицу `domain_events`** (имя, JSON-payload, время) — это аудит: кто регистрировался, менял предпочтения, кто обновлял квартиру в каталоге. Дублирование в лог для операторов. Дальше к тем же подпискам можно добавить очередь, webhooks и т.д. Просмотр: SQL / BI / будущая админка (`SELECT * FROM domain_events ORDER BY created_at DESC`).
+- **Frontend:** React 19, Vite, React Query, React Router; SCSS-модули.
+- **БД:** SQLite (`flats.db`, путь задаётся `DATABASE_URL` в `.env`).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Быстрый старт
 
-### `npm test`
+### Бэкенд
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+# Клонировать ветку backend
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+# при необходимости отредактируйте .env
+uvicorn app.main:app --reload --port 5000
+```
 
-### `npm run build`
+API: `http://localhost:5000`, документация OpenAPI: `http://localhost:5000/docs`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Фронтенд
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+# Клонировать ветку main
+npm install
+# по умолчанию VITE_API_BASE_URL не задан — используется http://localhost:5000
+npm run dev
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Приложение: `http://localhost:5173`.
 
-### `npm run eject`
+### Геокодер
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+По умолчанию при сидировании используется встроенный ключ разработки; его можно переопределить:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```env
+YANDEX_GEOCODER_API_KEY=<ваш_ключ>
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Как это работает
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Пользователь сохраняет **предпочтения** (`PUT /user/preferences`) — бюджет, район, атрибуты квартиры и пожелания по инфраструктуре. Это отвечает на вопрос: **«какую квартиру я ищу»** и как считать близость к цели по каждому признаку.
+2. В режиме **TOPSIS** клиент передаёт **нормализованные веса** десяти критериев (пресеты или ползунки). При необходимости вместо весов в API можно передать **матрицу парных сравнений 10×10** — сервер посчитает веса методом МАИ.
+3. Сервер нормализует матрицу решений, считает взвешенные значения, идеальное и антиидеальное решения, расстояния и относительную близость **Cᵢ**, сортирует список.
+4. Критерии на бэкенде (10): цена, площадь, комнаты, район, транспорт, инфраструктура, состояние, тип дома, этаж, балкон/лоджия.
 
-## Learn More
+## Соответствие ТЗ (задача 26)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Требование | Статус |
+|------------|--------|
+| Профиль: район, тип квартиры, площадь, комнаты, балкон/лоджия, этаж, тип дома, метро, инфраструктура, транспортная доступность | Реализовано |
+| Критерии TOPSIS (площадь, комнаты, район, транспорт, инфраструктура, состояние, тип дома, этаж, балкон/лоджия) + **цена** | Реализовано |
+| МАИ / веса: пресеты и ручные веса; **pairwiseMatrix** 10×10 на API | Реализовано; в UI пресет «Равные веса» вместо отдельной матрицы |
+| TOPSIS: нормализация, идеал/антиидеал, расстояния, Cᵢ, сортировка | Реализовано |
+| Интерфейс: фильтрация, сортировка списка | Реализовано |
+| Список, карточка, детальная страница, избранное, сравнение, карта | Реализовано |
+| БД | SQLite |
+| Внешние источники объявлений (ЦИАН, Авито и т.д.), автообновление | **Не реализовано**; заложены HTTP-клиент, обработка ошибок геокодера, единая модель квартиры — см. `demo_apartment_source.py` как образец адаптера |
+| DDD | Слои и домены `auth`, `user`, `apartment` |
+| Событийная архитектура | Шина + персистентный аудит в таблице `domain_events` |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Тесты
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+cd backend/FLATS
+pytest tests/ -v
+```

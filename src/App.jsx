@@ -5,6 +5,7 @@ import Profile from "@pages/Profile";
 import Register from "@pages/Register";
 import Flat from "@pages/Flat";
 import { AuthProvider } from "@shared/api/auth/AuthContext";
+import RequireAuth from "@shared/api/auth/RequireAuth";
 
 function App() {
   return (
@@ -18,9 +19,9 @@ function App() {
             <Route element={<Flat />} path="/apartment/:id" />
             <Route
               element={
-                // <RequireAuth>
-                <Profile />
-                // </RequireAuth>
+                <RequireAuth>
+                  <Profile />
+                </RequireAuth>
               }
               path="/profile"
             />

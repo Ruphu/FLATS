@@ -18,6 +18,41 @@
 	font-weight: 700;
 }
 
+.resultBarRight {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px;
+}
+
+.resultHint {
+	font-weight: 600;
+}
+
+.sortControl {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--color-text);
+
+	span {
+		white-space: nowrap;
+	}
+}
+
+.sortSelect {
+	min-width: 220px;
+	padding: 8px 12px;
+	border: 1px solid var(--color-border-soft);
+	border-radius: var(--radius-button);
+	background: var(--color-bg-surface);
+	font: inherit;
+	font-weight: 600;
+	color: var(--color-text);
+}
+
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

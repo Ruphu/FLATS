@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Card from '@components/Card'
 import {
@@ -74,6 +74,12 @@ const CardsList = ({
 	compareIds = [],
 	onCompareToggle,
 }) => {
+	const [listSort, setListSort] = useState('default')
+
+	useEffect(() => {
+		setListSort('default')
+	}, [mode])
+
 	const navigate = useNavigate()
 	const isRecommended = mode === 'recommended'
 	const isFavoritesMode = mode === 'favorites'
@@ -100,6 +106,47 @@ const CardsList = ({
 		() => rawApartments.filter(apartment => matchesFilters(apartment, filters)),
 		[rawApartments, filters],
 	)
+
+	const sortOptions = useMemo(() => {
+		const options = [
+			{
+				value: 'default',
+				label: isRecommended ? 'По рангу TOPSIS' : 'Порядок с сервера',
+			},
+			{ value: 'price_asc', label: 'Цена: по возрастанию' },
+			{ value: 'price_desc', label: 'Цена: по убыванию' },
+			{ value: 'area_asc', label: 'Площадь: по возрастанию' },
+			{ value: 'area_desc', label: 'Площадь: по убыванию' },
+		]
+		if (isRecommended) {
+			options.push(
+				{ value: 'score_desc', label: 'Соответствие: сначала выше' },
+				{ value: 'score_asc', label: 'Соответствие: сначала ниже' },
+			)
+		}
+		return options
+	}, [isRecommended])
+
+	const sortedApartments = useMemo(() => {
+		const list = [...apartments]
+		const byRank = (a, b) => (a.rank ?? 1e9) - (b.rank ?? 1e9)
+		switch (listSort) {
+			case 'price_asc':
+				return list.sort((a, b) => a.price - b.price)
+			case 'price_desc':
+				return list.sort((a, b) => b.price - a.price)
+			case 'area_asc':
+				return list.sort((a, b) => (a.area ?? 0) - (b.area ?? 0))
+			case 'area_desc':
+				return list.sort((a, b) => (b.area ?? 0) - (a.area ?? 0))
+			case 'score_desc':
+				return list.sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
+			case 'score_asc':
+				return list.sort((a, b) => (a.score ?? 1e9) - (b.score ?? 1e9))
+			default:
+				return isRecommended ? list.sort(byRank) : list
+		}
+	}, [apartments, listSort, isRecommended])
 	const favoriteIds = useMemo(
 		() => new Set((favoritesQuery.data ?? []).map(apartment => apartment.id)),
 		[favoritesQuery.data],
@@ -146,8 +193,7 @@ const CardsList = ({
 				<div className={styles.stateCard}>
 					<p className={styles.stateTitle}>Не удалось загрузить квартиры</p>
 					<p className={styles.stateText}>
-						{activeQuery.error?.message ??
-							'Попробуйте обновить страницу чуть позже.'}
+						Попробуйте обновить страницу чуть позже.
 					</p>
 				</div>
 			</section>
@@ -158,14 +204,32 @@ const CardsList = ({
 		<section className={styles.cards}>
 			<div className={styles.resultBar}>
 				<span>Найдено: {apartments.length}</span>
-				{isFavoritesMode ? <span>Избранное хранится в вашем профиле</span> : null}
+				<div className={styles.resultBarRight}>
+					{isFavoritesMode ? (
+						<span className={styles.resultHint}>Избранное в вашем профиле</span>
+					) : null}
+					<label className={styles.sortControl}>
+						<span>Сортировка</span>
+						<select
+							value={listSort}
+							onChange={event => setListSort(event.target.value)}
+							className={styles.sortSelect}
+						>
+							{sortOptions.map(option => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
+						</select>
+					</label>
+				</div>
 			</div>
 
 			{compareIds.length >= 2 ? (
 				<div className={styles.comparePanel}>
 					<div className={styles.compareHeader}>
 						<h2>Сравнение квартир</h2>
-						<p>Выбрано {compareIds.length}. Данные загружаются с Python-бэка.</p>
+						<p>Выбрано {compareIds.length}.</p>
 					</div>
 
 					{compareQuery.data?.length ? (
@@ -177,7 +241,15 @@ const CardsList = ({
 									<span>{apartment.area} м²</span>
 									<span>{apartment.roomsCount} комн.</span>
 									<span>{apartment.floor} этаж</span>
-									<span>{apartment.minutesToMetro} мин. до метро</span>
+									<span>{apartment.district}</span>
+									<span>{apartment.houseType}</span>
+									<span>
+										Состояние:{' '}
+										{Math.round((apartment.conditionScore ?? 0.7) * 100)}%
+									</span>
+									<span>
+										{apartment.nearestMetro}, {apartment.minutesToMetro} мин.
+									</span>
 									<span>Транспорт: {apartment.transportAccessibility ?? 70}/100</span>
 								</div>
 							))}
@@ -203,7 +275,7 @@ const CardsList = ({
 				</div>
 			) : (
 				<div className={styles.grid}>
-					{apartments.map(apartment => (
+					{sortedApartments.map(apartment => (
 						<Card
 							key={apartment.id}
 							address={apartment.address}
@@ -233,3 +305,4 @@ const CardsList = ({
 }
 
 export default CardsList
+

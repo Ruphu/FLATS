@@ -44,7 +44,7 @@ const Sort = ({
 					<h1 className={styles.title}>{modeTitles[mode] ?? modeTitles.all}</h1>
 					<p className={styles.subtitle}>
 						{isRecommended
-							? 'TOPSIS ранжирует варианты по профилю и выбранному приоритету.'
+							? 'TOPSIS ранжирует варианты по вашему профилю и выбранным весам критериев.'
 							: 'Смотрите каталог, персональный подбор или сохраненные квартиры.'}
 					</p>
 				</div>

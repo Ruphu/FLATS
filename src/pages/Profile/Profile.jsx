@@ -29,9 +29,6 @@ const Profile = () => {
 				<section className={styles.card}>
 					<p className={styles.kicker}>Профиль пользователя</p>
 					<h1 className={styles.title}>Профиль</h1>
-					<p className={styles.description}>
-						Эти данные используются backend2 для расчета TOPSIS-рекомендаций.
-					</p>
 
 					{meQuery.isPending ? (
 						<p className={styles.status}>Загружаем данные профиля...</p>
