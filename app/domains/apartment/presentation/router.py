@@ -2,8 +2,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.domains.apartment.application.use_cases import ApartmentUseCases
-from app.domains.apartment.application.use_cases import CRITERIA, DEFAULT_WEIGHTS
+from app.common.events import publish
+from app.domains.apartment.application.use_cases import (
+    ApartmentUseCases,
+    CRITERIA,
+    DEFAULT_WEIGHTS,
+    build_fallback_preference,
+)
 from app.domains.apartment.presentation.dependencies import (
     get_apartment_use_cases,
     get_preference_repository,
@@ -33,6 +38,10 @@ def upsert_apartment(
     apartments: Annotated[ApartmentUseCases, Depends(get_apartment_use_cases)],
 ) -> ApartmentResponse:
     apartment = apartments.upsert_apartment(apartment_from_request(payload))
+    publish(
+        'apartment.upserted',
+        {'apartment_id': apartment.id, 'title': apartment.title},
+    )
     return apartment_to_response(apartment)
 
 
@@ -58,9 +67,9 @@ def get_recommendations(
     apartments: Annotated[ApartmentUseCases, Depends(get_apartment_use_cases)],
     preferences: Annotated[PreferenceRepository, Depends(get_preference_repository)],
 ) -> list[RecommendationResponse]:
-    preference = preferences.find_by_user_id(current_user.id)
-    if not preference:
-        return []
+    preference = preferences.find_by_user_id(current_user.id) or build_fallback_preference(
+        current_user.id
+    )
 
     weights = apartments.get_recommendation_weights(payload.weights, payload.pairwiseMatrix)
     recommendations = apartments.recommend_apartments(

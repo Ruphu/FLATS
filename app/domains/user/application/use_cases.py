@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from app.common.errors import NotFoundError
+from app.common.events import publish
 from app.domains.apartment.domain.entities import Apartment
 from app.domains.apartment.domain.repositories import ApartmentRepository
 from app.domains.auth.domain.repositories import UserRepository
@@ -45,8 +46,20 @@ class UserUseCases:
             floor_max=preference.floor_max,
             house_type=preference.house_type,
             minutes_to_metro=preference.minutes_to_metro,
+            wants_shops_nearby=preference.wants_shops_nearby,
+            wants_schools_nearby=preference.wants_schools_nearby,
+            wants_kindergartens_nearby=preference.wants_kindergartens_nearby,
+            wants_parks_nearby=preference.wants_parks_nearby,
         )
-        return self._preferences.upsert(preference_to_save)
+        saved = self._preferences.upsert(preference_to_save)
+        publish(
+            'user.preferences_upserted',
+            {
+                'user_id': user_id,
+                'preference_id': saved.id,
+            },
+        )
+        return saved
 
     def get_preferences(self, user_id: str) -> Preference:
         preference = self._preferences.find_by_user_id(user_id)

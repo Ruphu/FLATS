@@ -1,3 +1,4 @@
+import os
 import random
 
 import requests
@@ -8,16 +9,23 @@ from app.infrastructure.repositories.sqlalchemy_apartment_repository import (
     SqlAlchemyApartmentRepository,
 )
 
-# ── Конфигурация Яндекс.Геокодера ──────────────────────────────────
-YANDEX_API_KEY = "0683fa1e-4d2e-43f8-8be7-0f1709a6bef3"
 GEOCODE_URL = "https://geocode-maps.yandex.ru/1.x/"
 GEOCODE_CACHE: dict[str, tuple[float, float]] = {}
+_DEFAULT_YANDEX_GEOCODER_KEY = "0683fa1e-4d2e-43f8-8be7-0f1709a6bef3"
+
+
+def _geocoder_api_key() -> str:
+    return (
+        os.environ.get("YANDEX_GEOCODER_API_KEY") or _DEFAULT_YANDEX_GEOCODER_KEY
+    ).strip()
 
 
 def _geocode(address: str, district: str) -> tuple[float, float]:
     """Получает координаты через Яндекс.Геокодер с кешированием."""
     if address in GEOCODE_CACHE:
         return GEOCODE_CACHE[address]
+
+    api_key = _geocoder_api_key()
 
     queries = [
         f"Санкт-Петербург, {address}",
@@ -29,7 +37,7 @@ def _geocode(address: str, district: str) -> tuple[float, float]:
             response = requests.get(
                 GEOCODE_URL,
                 params={
-                    "apikey": YANDEX_API_KEY,
+                    "apikey": api_key,
                     "geocode": query,
                     "format": "json",
                 },

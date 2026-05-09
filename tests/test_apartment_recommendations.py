@@ -1,4 +1,8 @@
-from app.domains.apartment.application.use_cases import ApartmentUseCases, CRITERIA
+from app.domains.apartment.application.use_cases import (
+    ApartmentUseCases,
+    CRITERIA,
+    build_fallback_preference,
+)
 from app.domains.apartment.domain.entities import Apartment
 from app.domains.apartment.domain.value_objects import ApartmentType
 from app.domains.user.domain.entities import Preference
@@ -98,6 +102,21 @@ def test_topsis_returns_ranked_recommendations() -> None:
     assert recommendations[0].apartment.id == 'best'
     assert recommendations[0].score > recommendations[1].score
     assert set(recommendations[0].criteria_scores) == set(CRITERIA)
+
+
+def test_topsis_ranks_with_fallback_preference_neutral_district() -> None:
+    use_cases = ApartmentUseCases(
+        InMemoryApartmentRepository(
+            [
+                make_apartment('a', 10_000_000, 55, 'Невский', 8),
+                make_apartment('b', 11_000_000, 62, 'Петроградский', 6),
+            ]
+        )
+    )
+    fallback = build_fallback_preference('user-x')
+    recommendations = use_cases.recommend_apartments(fallback)
+    assert len(recommendations) == 2
+    assert {item.apartment.id for item in recommendations} == {'a', 'b'}
 
 
 def test_ahp_matrix_produces_normalized_weights() -> None:

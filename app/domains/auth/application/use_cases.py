@@ -1,4 +1,5 @@
 from app.common.errors import AlreadyExistsError, UnauthorizedError
+from app.common.events import publish
 from app.common.security.jwt_service import JwtService
 from app.common.security.password_hasher import ArgonPasswordHasher
 from app.domains.auth.domain.entities import AuthToken, User
@@ -24,6 +25,10 @@ class AuthUseCases:
             name=name,
             email=email,
             password_hash=self._password_hasher.hash(password),
+        )
+        publish(
+            'user.registered',
+            {'user_id': user.id, 'email': user.email},
         )
         return self._issue_token(user.id)
 

@@ -10,6 +10,7 @@ from app.common.errors import (
     UnauthorizedError,
     ValidationError,
 )
+from app.common.events.setup import register_default_event_handlers
 from app.common.settings.config import get_settings
 from app.domains.apartment.presentation.router import router as apartment_router
 from app.domains.auth.presentation.router import router as auth_router
@@ -40,6 +41,7 @@ app.mount('/public', StaticFiles(directory='public', check_dir=False), name='pub
 def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
     models.ensure_schema_compatibility(engine)
+    register_default_event_handlers()
     session = SessionLocal()
     try:
         seed_demo_apartments(SqlAlchemyApartmentRepository(session))

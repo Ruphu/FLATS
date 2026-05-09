@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -191,6 +191,19 @@ class FavoriteApartmentModel(Base):
         Index('favorite_apartments_user_id_idx', 'user_id'),
         Index('favorite_apartments_apartment_id_idx', 'apartment_id'),
     )
+
+
+class DomainEventModel(Base):
+    """Аудит доменных событий: регистрации, смена предпочтений, изменения каталога."""
+
+    __tablename__ = 'domain_events'
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=uuid_str)
+    name: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    payload: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (Index('domain_events_created_at_idx', 'created_at'),)
 
 
 def ensure_schema_compatibility(engine: Engine) -> None:

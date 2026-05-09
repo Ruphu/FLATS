@@ -1,7 +1,31 @@
+from uuid import uuid4
+
 from app.common.errors import NotFoundError, ValidationError
 from app.domains.apartment.domain.entities import Apartment, ApartmentRecommendation
 from app.domains.apartment.domain.repositories import ApartmentRepository
+from app.domains.apartment.domain.value_objects import ApartmentType
 from app.domains.user.domain.entities import Preference
+
+
+def build_fallback_preference(user_id: str) -> Preference:
+    """Широкий профиль, если пользователь ещё не сохранил предпочтения — TOPSIS всё равно ранжирует каталог."""
+    return Preference(
+        id=str(uuid4()),
+        user_id=user_id,
+        budget_min=0,
+        budget_max=999_999_999,
+        preferred_district='',
+        apartment_type=ApartmentType.secondary,
+        area_min=1.0,
+        area_max=10_000.0,
+        rooms_count=2,
+        has_balcony=False,
+        has_loggia=False,
+        floor_min=0,
+        floor_max=200,
+        house_type='',
+        minutes_to_metro=120,
+    )
 
 
 CRITERIA = (
@@ -57,8 +81,7 @@ class ApartmentUseCases:
     def recommend_apartments(
         self,
         preference: Preference,
-        weights: dict[str, float] | None = None,
-        pairwise_matrix: list[list[float]] | None = None,
+        weights: dict[str, float],
         only_matching: bool = False,
     ) -> list[ApartmentRecommendation]:
         apartments = self.get_all_apartments()
@@ -69,8 +92,7 @@ class ApartmentUseCases:
                 if self._matches_required_profile(apartment, preference)
             ]
 
-        effective_weights = self._resolve_weights(weights, pairwise_matrix)
-        return self._rank_by_topsis(apartments, preference, effective_weights)
+        return self._rank_by_topsis(apartments, preference, weights)
 
     def get_recommendation_weights(
         self,
@@ -175,13 +197,17 @@ class ApartmentUseCases:
         apartment: Apartment,
         preference: Preference,
     ) -> bool:
+        house_ok = (
+            not preference.house_type.strip()
+            or apartment.house_type == preference.house_type
+        )
         return (
             preference.budget_min <= apartment.price <= preference.budget_max
             and preference.area_min <= apartment.area <= preference.area_max
             and apartment.rooms_count == preference.rooms_count
             and apartment.apartment_type == preference.apartment_type
             and preference.floor_min <= apartment.floor <= preference.floor_max
-            and apartment.house_type == preference.house_type
+            and house_ok
             and apartment.minutes_to_metro <= preference.minutes_to_metro
             and (not preference.has_balcony or apartment.has_balcony)
             and (not preference.has_loggia or apartment.has_loggia)
@@ -228,6 +254,8 @@ class ApartmentUseCases:
 
     @staticmethod
     def _match(value: str, target: str) -> float:
+        if not target.strip():
+            return 1.0
         return 1.0 if value.strip().lower() == target.strip().lower() else 0.0
 
     @staticmethod
