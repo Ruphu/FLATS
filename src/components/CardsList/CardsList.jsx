@@ -111,7 +111,7 @@ const CardsList = ({
 		const options = [
 			{
 				value: 'default',
-				label: isRecommended ? 'По рангу TOPSIS' : 'Порядок с сервера',
+				label: isRecommended ? 'Лучшие совпадения' : 'По умолчанию',
 			},
 			{ value: 'price_asc', label: 'Цена: по возрастанию' },
 			{ value: 'price_desc', label: 'Цена: по убыванию' },
@@ -177,10 +177,10 @@ const CardsList = ({
 					<p className={styles.stateTitle}>Загружаем квартиры...</p>
 					<p className={styles.stateText}>
 						{isRecommended
-							? 'Считаем TOPSIS-рейтинг по вашему профилю.'
+							? 'Подбираем квартиры по вашему профилю.'
 							: isFavoritesMode
 								? 'Загружаем сохраненные квартиры.'
-								: 'Подтягиваем список квартир с сервера.'}
+								: 'Загружаем каталог квартир.'}
 					</p>
 				</div>
 			</section>
@@ -305,4 +305,3 @@ const CardsList = ({
 }
 
 export default CardsList
-

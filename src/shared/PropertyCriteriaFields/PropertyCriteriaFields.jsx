@@ -24,6 +24,7 @@ const PropertyCriteriaFields = ({
 						minMin={section.minMin}
 						minMax={section.minMax}
 						step={section.step}
+						format={section.format}
 					/>
 				</div>
 			)
@@ -47,6 +48,26 @@ const PropertyCriteriaFields = ({
 						onChange={onInputChange}
 					/>
 				</div>
+			)
+		}
+
+		if (section.type === 'select') {
+			return (
+				<label key={section.name} className={styles.section}>
+					<span className={styles.sectionTitle}>{section.label}</span>
+					<select
+						className={styles.select}
+						name={section.name}
+						value={criteria[section.name]}
+						onChange={onInputChange}
+					>
+						{section.options.map(option => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
+				</label>
 			)
 		}
 

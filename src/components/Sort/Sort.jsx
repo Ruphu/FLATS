@@ -44,7 +44,7 @@ const Sort = ({
 					<h1 className={styles.title}>{modeTitles[mode] ?? modeTitles.all}</h1>
 					<p className={styles.subtitle}>
 						{isRecommended
-							? 'TOPSIS ранжирует варианты по вашему профилю и выбранным весам критериев.'
+							? 'Мы расставим варианты по вашим предпочтениям и выбранной важности критериев.'
 							: 'Смотрите каталог, персональный подбор или сохраненные квартиры.'}
 					</p>
 				</div>
@@ -64,7 +64,7 @@ const Sort = ({
 						className={styles.button}
 						onClick={() => onModeChange('recommended')}
 					>
-						TOPSIS
+						Подбор
 					</Button>
 					<Button
 						size='lg'
@@ -116,7 +116,7 @@ const Sort = ({
 							className={styles.advancedToggle}
 							onClick={() => setIsAdvancedOpen(current => !current)}
 						>
-							{isAdvancedOpen ? 'Скрыть веса критериев' : 'Настроить веса вручную'}
+							{isAdvancedOpen ? 'Скрыть настройки' : 'Настроить важность критериев'}
 						</button>
 
 						{isAdvancedOpen ? (

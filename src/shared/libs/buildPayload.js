@@ -1,6 +1,16 @@
 import { initialCriteria } from '@constants/propertyCriteria'
 
-const toNumberValue = value => Number(value)
+const toNumberValue = value => {
+	if (typeof value === 'number') {
+		return value
+	}
+
+	const normalizedValue = String(value ?? '')
+		.replace(/\s/g, '')
+		.replace(',', '.')
+
+	return Number(normalizedValue)
+}
 const toStringValue = value => (value == null ? '' : String(value))
 
 const criteriaBuilders = {

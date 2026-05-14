@@ -1,3 +1,5 @@
+import { spbDistrictOptions } from '@constants/districts'
+
 export const apartmentTypeOptions = [
 	{ value: 'new_building', label: 'Новостройка' },
 	{ value: 'secondary', label: 'Вторичка' },
@@ -15,14 +17,13 @@ export const criteriaSections = [
 		title: 'Бюджет, руб.',
 		nameMin: 'budgetMin',
 		nameMax: 'budgetMax',
+		format: 'money',
 	},
 	{
-		type: 'text',
+		type: 'select',
 		label: 'Предпочитаемый район',
 		name: 'preferredDistrict',
-		minLength: 2,
-		maxLength: 100,
-		placeholder: 'Например, Петроградский',
+		options: spbDistrictOptions,
 	},
 	{
 		type: 'radio',
@@ -88,7 +89,7 @@ export const criteriaSections = [
 export const initialCriteria = {
 	budgetMin: '0',
 	budgetMax: '0',
-	preferredDistrict: '',
+	preferredDistrict: spbDistrictOptions[0].value,
 	apartmentType: apartmentTypeOptions[0].value,
 	areaMin: '0',
 	areaMax: '0',

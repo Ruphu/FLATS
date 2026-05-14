@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Button from '@shared/Button'
 import { PREFERENCES_ERROR_MESSAGES } from '@constants/api_errors'
 import { initialCriteria } from '@constants/propertyCriteria'
+import { getApiErrorMessage } from '@shared/api/apiErrorMessages'
 import { buildCriteria } from '@shared/libs'
 import { usePreferences } from '@hooks'
 import PropertyCriteriaFields from '@shared/PropertyCriteriaFields'
@@ -11,12 +12,19 @@ const Preferences = () => {
 	const [preferences, setPreferences] = useState(initialCriteria)
 	const { preferencesQuery, updatePreferencesMutation } = usePreferences()
 	const loadErrorMessage = preferencesQuery.isError
-		? PREFERENCES_ERROR_MESSAGES.load[preferencesQuery.error?.status] ??
-			PREFERENCES_ERROR_MESSAGES.load.default
+		? getApiErrorMessage(
+				preferencesQuery.error,
+				PREFERENCES_ERROR_MESSAGES.load[preferencesQuery.error?.status] ??
+					PREFERENCES_ERROR_MESSAGES.load.default,
+			)
 		: ''
 	const saveErrorMessage = updatePreferencesMutation.isError
-		? PREFERENCES_ERROR_MESSAGES.save[updatePreferencesMutation.error?.status] ??
-			PREFERENCES_ERROR_MESSAGES.save.default
+		? getApiErrorMessage(
+				updatePreferencesMutation.error,
+				PREFERENCES_ERROR_MESSAGES.save[
+					updatePreferencesMutation.error?.status
+				] ?? PREFERENCES_ERROR_MESSAGES.save.default,
+			)
 		: ''
 
 	useEffect(() => {

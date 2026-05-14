@@ -26,7 +26,7 @@ const initialFilters = {
 }
 
 const filterSections = criteriaSections.map(section => {
-	if (section.type !== 'radio') {
+	if (section.type !== 'radio' && section.type !== 'select') {
 		return section
 	}
 
