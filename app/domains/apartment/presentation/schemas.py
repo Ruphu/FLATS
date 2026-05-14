@@ -2,7 +2,12 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
-from app.domains.apartment.domain.value_objects import HOUSE_TYPES, METRO_STATIONS, ApartmentType
+from app.domains.apartment.domain.value_objects import (
+    HOUSE_TYPES,
+    METRO_STATIONS,
+    SPB_DISTRICTS,
+    ApartmentType,
+)
 
 
 class ImageSchema(BaseModel):
@@ -41,6 +46,13 @@ class ApartmentRequest(BaseModel):
     def validate_nearest_metro(cls, value: str) -> str:
         if value not in METRO_STATIONS:
             raise ValueError('Nearest metro must be a valid station')
+        return value
+
+    @field_validator('district')
+    @classmethod
+    def validate_district(cls, value: str) -> str:
+        if value not in SPB_DISTRICTS:
+            raise ValueError('District must be a valid Saint Petersburg district')
         return value
 
     @field_validator('houseType')

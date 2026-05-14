@@ -81,7 +81,7 @@ class ApartmentUseCases:
     def recommend_apartments(
         self,
         preference: Preference,
-        weights: dict[str, float],
+        weights: dict[str, float] | None = None,
         only_matching: bool = False,
     ) -> list[ApartmentRecommendation]:
         apartments = self.get_all_apartments()
@@ -92,7 +92,11 @@ class ApartmentUseCases:
                 if self._matches_required_profile(apartment, preference)
             ]
 
-        return self._rank_by_topsis(apartments, preference, weights)
+        return self._rank_by_topsis(
+            apartments,
+            preference,
+            self._resolve_weights(weights, None),
+        )
 
     def get_recommendation_weights(
         self,
@@ -223,7 +227,7 @@ class ApartmentUseCases:
 
         source = weights or DEFAULT_WEIGHTS
         cleaned = {
-            criterion: max(float(source.get(criterion, 0)), 0.0)
+            criterion: float(source.get(criterion, 0.0))
             for criterion in CRITERIA
         }
         total = sum(cleaned.values()) or 1.0

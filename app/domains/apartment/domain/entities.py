@@ -5,6 +5,7 @@ from app.common.errors import ValidationError
 from app.domains.apartment.domain.value_objects import (
     HOUSE_TYPES,
     METRO_STATIONS,
+    SPB_DISTRICTS,
     ApartmentType,
 )
 
@@ -67,6 +68,8 @@ class Apartment:
             raise ValidationError('Transport accessibility must be between 0 and 100')
         if self.house_type not in HOUSE_TYPES:
             raise ValidationError('Invalid house type')
+        if self.district not in SPB_DISTRICTS:
+            raise ValidationError('Invalid district')
         if self.nearest_metro not in METRO_STATIONS:
             raise ValidationError('Invalid nearest metro')
 

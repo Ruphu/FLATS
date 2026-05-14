@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, model_validator
 
-from app.domains.apartment.domain.value_objects import ApartmentType
+from app.domains.apartment.domain.value_objects import ApartmentType, SPB_DISTRICTS
 
 
 class PreferenceRequest(BaseModel):
@@ -21,6 +21,14 @@ class PreferenceRequest(BaseModel):
     wantsSchoolsNearby: bool = False
     wantsKindergartensNearby: bool = False
     wantsParksNearby: bool = False
+
+    @model_validator(mode='after')
+    def validate_district(self) -> 'PreferenceRequest':
+        if self.preferredDistrict not in SPB_DISTRICTS:
+            raise ValueError(
+                'Preferred district must be a valid Saint Petersburg district'
+            )
+        return self
 
     @model_validator(mode='after')
     def validate_ranges(self) -> 'PreferenceRequest':
