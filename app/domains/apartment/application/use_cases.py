@@ -91,7 +91,7 @@ class ApartmentUseCases:
                 for apartment in apartments
                 if self._matches_required_profile(apartment, preference)
             ]
-
+        
         return self._rank_by_topsis(
             apartments,
             preference,

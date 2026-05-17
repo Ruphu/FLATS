@@ -1,5 +1,3 @@
-"""Подписки на доменные события (in-process). Расширяйте обработчиками интеграций."""
-
 import logging
 from collections.abc import Mapping
 
