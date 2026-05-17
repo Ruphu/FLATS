@@ -1,369 +1,379 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
-import { fallbackCardImage } from '@constants/card'
-import useApartment from '@hooks/useApartment'
-import useFavorites from '@hooks/useFavorites'
-import Header from '@components/Header'
-import Button from '@shared/Button'
-import Container from '@shared/Container'
-import styles from './Flat.module.scss'
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { fallbackCardImage } from "@constants/card";
+import useApartment from "@hooks/useApartment";
+import useFavorites from "@hooks/useFavorites";
+import Header from "@components/Header";
+import Button from "@shared/Button";
+import Container from "@shared/Container";
+import styles from "./Flat.module.scss";
 
-const priceFormatter = new Intl.NumberFormat('ru-RU')
-const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-})
+const priceFormatter = new Intl.NumberFormat("ru-RU");
+const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
 
-const formatPrice = value => `${priceFormatter.format(value ?? 0)} ₽`
+const formatPrice = (value) => `${priceFormatter.format(value ?? 0)} ₽`;
 
-const formatArea = area => {
-        if (!area && area !== 0) {
-                return 'Не указана'
-        }
+const formatArea = (area) => {
+  if (!area && area !== 0) {
+    return "Не указана";
+  }
 
-        return `${priceFormatter.format(area)} м²`
-}
+  return `${priceFormatter.format(area)} м²`;
+};
 
-const formatRooms = roomsCount => {
-        if (roomsCount === 0) {
-                return 'Студия'
-        }
+const formatRooms = (roomsCount) => {
+  if (roomsCount === 0) {
+    return "Студия";
+  }
 
-        if (!roomsCount && roomsCount !== 0) {
-                return 'Не указано'
-        }
+  if (!roomsCount && roomsCount !== 0) {
+    return "Не указано";
+  }
 
-        return `${roomsCount} комн.`
-}
+  return `${roomsCount} комн.`;
+};
 
-const formatFloor = floor => {
-        if (!floor && floor !== 0) {
-                return 'Не указан'
-        }
+const formatFloor = (floor) => {
+  if (!floor && floor !== 0) {
+    return "Не указан";
+  }
 
-        return `${floor} этаж`
-}
+  return `${floor} этаж`;
+};
 
 const formatMetro = (nearestMetro, minutesToMetro) => {
-        if (!nearestMetro && minutesToMetro !== 0 && !minutesToMetro) {
-                return 'Метро не указано'
-        }
+  if (!nearestMetro && minutesToMetro !== 0 && !minutesToMetro) {
+    return "Метро не указано";
+  }
 
-        if (!nearestMetro) {
-                return `${minutesToMetro} мин. до метро`
-        }
+  if (!nearestMetro) {
+    return `${minutesToMetro} мин. до метро`;
+  }
 
-        if (minutesToMetro || minutesToMetro === 0) {
-                return `${nearestMetro}, ${minutesToMetro} мин.`
-        }
+  if (minutesToMetro || minutesToMetro === 0) {
+    return `${nearestMetro}, ${minutesToMetro} мин.`;
+  }
 
-        return nearestMetro
-}
+  return nearestMetro;
+};
 
-const buildGallery = apartment => {
-        if (!apartment) {
-                return [fallbackCardImage]
-        }
+const buildGallery = (apartment) => {
+  if (!apartment) {
+    return [fallbackCardImage];
+  }
 
-        const images = [
-                ...(Array.isArray(apartment.images) ? apartment.images : []),
-                apartment.image,
-        ].filter(Boolean)
+  const images = [
+    ...(Array.isArray(apartment.images) ? apartment.images : []),
+    apartment.image,
+  ].filter(Boolean);
 
-        return images.length > 0 ? [...new Set(images)] : [fallbackCardImage]
-}
+  return images.length > 0 ? [...new Set(images)] : [fallbackCardImage];
+};
 
-const buildYandexMapUrl = apartment => {
-        if (apartment?.latitude && apartment?.longitude) {
-                return `https://yandex.ru/maps/?pt=${apartment.longitude},${apartment.latitude}&z=16&l=map`
-        }
+const buildYandexMapUrl = (apartment) => {
+  if (apartment?.latitude && apartment?.longitude) {
+    return `https://yandex.ru/maps/?pt=${apartment.longitude},${apartment.latitude}&z=16&l=map`;
+  }
 
-        if (apartment?.address) {
-                return `https://yandex.ru/maps/?text=${encodeURIComponent(apartment.address)}`
-        }
+  if (apartment?.address) {
+    return `https://yandex.ru/maps/?text=${encodeURIComponent(apartment.address)}`;
+  }
 
-        return 'https://yandex.ru/maps/'
-}
+  return "https://yandex.ru/maps/";
+};
 
-const buildYandexMapEmbedUrl = apartment => {
-        if (apartment?.latitude && apartment?.longitude) {
-                return `https://yandex.ru/map-widget/v1/?ll=${apartment.longitude},${apartment.latitude}&z=15&pt=${apartment.longitude},${apartment.latitude},pm2rdm`
-        }
+const buildYandexMapEmbedUrl = (apartment) => {
+  if (apartment?.latitude && apartment?.longitude) {
+    return `https://yandex.ru/map-widget/v1/?ll=${apartment.longitude},${apartment.latitude}&z=15&pt=${apartment.longitude},${apartment.latitude},pm2rdm`;
+  }
 
-        if (apartment?.address) {
-                return `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(apartment.address)}&z=15`
-        }
+  if (apartment?.address) {
+    return `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(apartment.address)}&z=15`;
+  }
 
-        return 'https://yandex.ru/map-widget/v1/'
-}
+  return "https://yandex.ru/map-widget/v1/";
+};
 
 const Flat = () => {
-        const { id } = useParams()
-        const navigate = useNavigate()
-        const { data: apartment, isLoading, isError } = useApartment(id)
-        const [activeImageIndex, setActiveImageIndex] = useState(0)
-        const {
-            favoritesQuery,
-            addFavoriteMutation,
-            deleteFavoriteMutation,
-            isAuthenticated,
-        } = useFavorites()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { data: apartment, isLoading, isError } = useApartment(id);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const {
+    favoritesQuery,
+    addFavoriteMutation,
+    deleteFavoriteMutation,
+    isAuthenticated,
+  } = useFavorites();
 
-        const isFavorite = useMemo(() => {
-            if (!favoritesQuery.data) return false
-            return favoritesQuery.data.some(fav => String(fav.id) === String(apartment?.id))
-        }, [favoritesQuery.data, apartment?.id])
+  const isFavorite = useMemo(() => {
+    if (!favoritesQuery.data) return false;
+    return favoritesQuery.data.some(
+      (fav) => String(fav.id) === String(apartment?.id),
+    );
+  }, [favoritesQuery.data, apartment?.id]);
 
-        const handleFavoriteClick = () => {
-            if (!isAuthenticated) {
-                navigate('/login')
-                return
-            }
-            if (isFavorite) {
-                deleteFavoriteMutation.mutate(apartment.id)
-            } else {
-                addFavoriteMutation.mutate(apartment.id)
-            }
-        }
+  const handleFavoriteClick = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (isFavorite) {
+      deleteFavoriteMutation.mutate(apartment.id);
+    } else {
+      addFavoriteMutation.mutate(apartment.id);
+    }
+  };
 
-        useEffect(() => {
-                setActiveImageIndex(0)
-        }, [apartment?.id])
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [apartment?.id]);
 
-        const gallery = buildGallery(apartment)
-        const activeImage = gallery[activeImageIndex] ?? gallery[0]
-        const mapUrl = useMemo(() => buildYandexMapUrl(apartment), [apartment])
-        const mapEmbedUrl = useMemo(() => buildYandexMapEmbedUrl(apartment), [apartment])
-        const pricePerSquareMeter =
-                apartment?.price && apartment?.area
-                        ? Math.round(apartment.price / apartment.area)
-                        : null
-        const badges = [
-                apartment?.district,
-                apartment?.apartmentType === 'secondary' ? 'Вторичка' : 'Новостройка',
-                apartment?.houseType,
-        ].filter(Boolean)
-        const infrastructure = [
-                apartment?.shopsNearby ? 'Магазины рядом' : null,
-                apartment?.schoolsNearby ? 'Школы рядом' : null,
-                apartment?.kindergartensNearby ? 'Детские сады рядом' : null,
-                apartment?.parksNearby ? 'Парки рядом' : null,
-        ].filter(Boolean)
-        const details = [
-                { label: 'Площадь', value: formatArea(apartment?.area) },
-                { label: 'Комнат', value: formatRooms(apartment?.roomsCount) },
-                { label: 'Этаж', value: formatFloor(apartment?.floor) },
-                {
-                        label: 'Балкон',
-                        value: apartment?.hasBalcony ? 'Есть' : 'Нет',
-                },
-                {
-                        label: 'Лоджия',
-                        value: apartment?.hasLoggia ? 'Есть' : 'Нет',
-                },
-                {
-                        label: 'Метро',
-                        value: formatMetro(apartment?.nearestMetro, apartment?.minutesToMetro),
-                },
-                {
-                        label: 'Транспорт',
-                        value: `${apartment?.transportAccessibility ?? 70}/100`,
-                },
-                {
-                        label: 'Состояние',
-                        value: `${Math.round((apartment?.conditionScore ?? 0.7) * 100)}%`,
-                },
-        ]
+  const gallery = buildGallery(apartment);
+  const activeImage = gallery[activeImageIndex] ?? gallery[0];
+  const mapUrl = useMemo(() => buildYandexMapUrl(apartment), [apartment]);
+  const mapEmbedUrl = useMemo(
+    () => buildYandexMapEmbedUrl(apartment),
+    [apartment],
+  );
+  const pricePerSquareMeter =
+    apartment?.price && apartment?.area
+      ? Math.round(apartment.price / apartment.area)
+      : null;
+  const badges = [
+    apartment?.district,
+    apartment?.apartmentType === "secondary" ? "Вторичка" : "Новостройка",
+    apartment?.houseType,
+  ].filter(Boolean);
+  const infrastructure = [
+    apartment?.shopsNearby ? "Магазины рядом" : null,
+    apartment?.schoolsNearby ? "Школы рядом" : null,
+    apartment?.kindergartensNearby ? "Детские сады рядом" : null,
+    apartment?.parksNearby ? "Парки рядом" : null,
+  ].filter(Boolean);
+  const details = [
+    { label: "Площадь", value: formatArea(apartment?.area) },
+    { label: "Комнат", value: formatRooms(apartment?.roomsCount) },
+    { label: "Этаж", value: formatFloor(apartment?.floor) },
+    {
+      label: "Балкон",
+      value: apartment?.hasBalcony ? "Есть" : "Нет",
+    },
+    {
+      label: "Лоджия",
+      value: apartment?.hasLoggia ? "Есть" : "Нет",
+    },
+    {
+      label: "Метро",
+      value: formatMetro(apartment?.nearestMetro, apartment?.minutesToMetro),
+    },
+    {
+      label: "Транспорт",
+      value: `${apartment?.transportAccessibility ?? 70}/100`,
+    },
+    {
+      label: "Состояние",
+      value: `${Math.round((apartment?.conditionScore ?? 0.7) * 100)}%`,
+    },
+  ];
 
-        return (
-                <div className={styles.page}>
-                        <Header />
+  return (
+    <div className={styles.page}>
+      <Header />
 
-                        <Container>
-                                <section className={styles.content}>
-                                        <div className={styles.breadcrumbs}>
-                                                <Link className={styles.breadcrumbLink} to='/'>
-                                                        Все квартиры
-                                                </Link>
-                                                <span className={styles.breadcrumbDivider}>/</span>
-                                                <span className={styles.breadcrumbCurrent}>
-                                                        {apartment?.title ?? 'Карточка квартиры'}
-                                                </span>
-                                        </div>
+      <Container>
+        <section className={styles.content}>
+          <div className={styles.breadcrumbs}>
+            <Link className={styles.breadcrumbLink} to="/">
+              Все квартиры
+            </Link>
+            <span className={styles.breadcrumbDivider}>/</span>
+            <span className={styles.breadcrumbCurrent}>
+              {apartment?.title ?? "Карточка квартиры"}
+            </span>
+          </div>
 
-                                        {isLoading ? (
-                                                <div className={styles.stateCard}>
-                                                        <h1 className={styles.stateTitle}>Загружаем квартиру...</h1>
-                                                        <p className={styles.stateText}>
-                                                                Сейчас подтянем фотографии, характеристики и описание.
-                                                        </p>
-                                                </div>
-                                        ) : isError ? (
-                                                <div className={styles.stateCard}>
-                                                        <h1 className={styles.stateTitle}>Не удалось открыть квартиру</h1>
-                                                        <p className={styles.stateText}>
-                                                                Попробуйте обновить страницу чуть позже.
-                                                        </p>
-                                                </div>
-                                        ) : !apartment ? (
-                                                <div className={styles.stateCard}>
-                                                        <h1 className={styles.stateTitle}>Квартира не найдена</h1>
-                                                        <p className={styles.stateText}>
-                                                                Возможно, объявление удалено или ссылка устарела.
-                                                        </p>
-                                                </div>
-                                        ) : (
-                                                <>
-                                                        <section className={styles.hero}>
-                                                                <div className={styles.galleryPanel}>
-                                                                        <div className={styles.mainImageWrapper}>
-                                                                               <img
-                                                                               alt={apartment.title}
-                                                                               className={styles.mainImage}
-                                                                               src={activeImage}
-                                                                               />
-                                                                        </div>
+          {isLoading ? (
+            <div className={styles.stateCard}>
+              <h1 className={styles.stateTitle}>Загружаем квартиру...</h1>
+              <p className={styles.stateText}>
+                Сейчас подтянем фотографии, характеристики и описание.
+              </p>
+            </div>
+          ) : isError ? (
+            <div className={styles.stateCard}>
+              <h1 className={styles.stateTitle}>Не удалось открыть квартиру</h1>
+              <p className={styles.stateText}>
+                Попробуйте обновить страницу чуть позже.
+              </p>
+            </div>
+          ) : !apartment ? (
+            <div className={styles.stateCard}>
+              <h1 className={styles.stateTitle}>Квартира не найдена</h1>
+              <p className={styles.stateText}>
+                Возможно, объявление удалено или ссылка устарела.
+              </p>
+            </div>
+          ) : (
+            <>
+              <section className={styles.hero}>
+                <div className={styles.galleryPanel}>
+                  <div className={styles.mainImageWrapper}>
+                    <img
+                      alt={apartment.title}
+                      className={styles.mainImage}
+                      src={activeImage}
+                    />
+                  </div>
 
-                                                                        {gallery.length > 1 && (
-                                                                               <div className={styles.thumbnailRow}>
-                                                                               {gallery.map((image, index) => (
-                                                                               <button
-                                                                               key={`${image}-${index}`}
-                                                                               className={`${styles.thumbnailButton} ${
-                                                                               index === activeImageIndex ? styles.thumbnailButtonActive : ''
-                                                                               }`}
-                                                                               onClick={() => setActiveImageIndex(index)}
-                                                                               type='button'
-                                                                               >
-                                                                               <img
-                                                                               alt={`${apartment.title} ${index + 1}`}
-                                                                               className={styles.thumbnailImage}
-                                                                               src={image}
-                                                                               />
-                                                                               </button>
-                                                                               ))}
-                                                                               </div>
-                                                                        )}
-                                                                </div>
-
-                                                                <aside className={styles.summaryCard}>
-                                                                        <div className={styles.summaryTop}>
-                                                                               <p className={styles.price}>{formatPrice(apartment.price)}</p>
-                                                                               <p className={styles.priceMeta}>
-                                                                               {pricePerSquareMeter
-                                                                               ? `${formatPrice(pricePerSquareMeter)} за м²`
-                                                                               : 'Цена за м² появится после получения полной площади'}
-                                                                               </p>
-                                                                        </div>
-
-                                                                        <div className={styles.actionGroup}>
-                                                                               <Button fullWidth size='lg'>
-                                                                               Связаться по объявлению
-                                                                               </Button>
-                                                                               <Button 
-                                                                               fullWidth 
-                                                                               size='lg' 
-                                                                               variant={isFavorite ? 'primary' : 'secondary'}
-                                                                               onClick={handleFavoriteClick}
-                                                                               >
-                                                                               {isFavorite ? 'В избранном' : 'Сохранить в избранное'}
-                                                                               </Button>
-                                                                               
-                                                                        </div>
-
-                                                                        <div className={styles.locationBlock}>
-                                                                               <p className={styles.locationLabel}>Адрес</p>
-                                                                               <p className={styles.locationValue}>{apartment.address}</p>
-                                                                               <p className={styles.metro}>
-                                                                               {formatMetro(apartment.nearestMetro, apartment.minutesToMetro)}
-                                                                               </p>
-                                                                        </div>
-
-                                                                        {badges.length > 0 && (
-                                                                               <div className={styles.badges}>
-                                                                               {badges.map(badge => (
-                                                                               <span key={badge} className={styles.badge}>
-                                                                               {badge}
-                                                                               </span>
-                                                                               ))}
-                                                                               </div>
-                                                                        )}
-
-                                                                        {apartment.createdAt && (
-                                                                               <p className={styles.publishDate}>
-                                                                               Опубликовано {dateFormatter.format(new Date(apartment.createdAt))}
-                                                                               </p>
-                                                                        )}
-                                                                </aside>
-                                                        </section>
-
-                                                        <section className={styles.infoGrid}>
-                                                                <div className={styles.mainInfo}>
-                                                                        <div className={styles.titleBlock}>
-                                                                               <h1 className={styles.title}>{apartment.title}</h1>
-                                                                               <p className={styles.subtitle}>
-                                                                               {apartment.district ? `${apartment.district} район` : 'Район не указан'}
-                                                                               </p>
-                                                                        </div>
-
-                                                                        <div className={styles.specGrid}>
-                                                                               {details.map(item => (
-                                                                               <div key={item.label} className={styles.specCard}>
-                                                                               <p className={styles.specLabel}>{item.label}</p>
-                                                                               <p className={styles.specValue}>{item.value}</p>
-                                                                               </div>
-                                                                               ))}
-                                                                        </div>
-                                                                </div>
-
-                                                                
-
-                                                                <div className={styles.descriptionCard}>
-                                                                        <h2 className={styles.sectionTitle}>Описание</h2>
-                                                                        <p className={styles.description}>
-                                                                               {apartment.description?.trim() ||
-                                                                               'Описание пока не добавлено, но основные характеристики квартиры уже доступны выше.'}
-                                                                        </p>
-                                                                </div>
-
-                                                                <div className={styles.descriptionCard}>
-                                                                        <h2 className={styles.sectionTitle}>Инфраструктура</h2>
-                                                                        <p className={styles.description}>
-                                                                               {infrastructure.length
-                                                                               ? infrastructure.join(', ')
-                                                                               : 'Инфраструктура района пока не заполнена.'}
-                                                                        </p>
-                                                                </div>
-
-                                                                <div className={styles.mapCard}>
-                                                                        <div className={styles.mapHeader}>
-                                                                               <h2 className={styles.sectionTitle}>Местоположение</h2>
-                                                                               <a
-                                                                               className={styles.mapLink}
-                                                                               href={mapUrl}
-                                                                               target='_blank'
-                                                                               rel='noreferrer'
-                                                                               >
-                                                                               Открыть в Яндекс.Картах
-                                                                               </a>
-                                                                        </div>
-                                                                        <iframe
-                                                                               className={styles.mapFrame}
-                                                                               src={mapEmbedUrl}
-                                                                               title={`Карта: ${apartment.title}`}
-                                                                               loading='lazy'
-                                                                        />
-                                                                </div>
-
-                                                                
-                                                        </section>
-                                                </>
-                                        )}
-                                </section>
-                        </Container>
+                  {gallery.length > 1 && (
+                    <div className={styles.thumbnailRow}>
+                      {gallery.map((image, index) => (
+                        <button
+                          key={`${image}-${index}`}
+                          className={`${styles.thumbnailButton} ${
+                            index === activeImageIndex
+                              ? styles.thumbnailButtonActive
+                              : ""
+                          }`}
+                          onClick={() => setActiveImageIndex(index)}
+                          type="button"
+                        >
+                          <img
+                            alt={`${apartment.title} ${index + 1}`}
+                            className={styles.thumbnailImage}
+                            src={image}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-        )
-}
 
-export default Flat
+                <aside className={styles.summaryCard}>
+                  <div className={styles.summaryTop}>
+                    <p className={styles.price}>
+                      {formatPrice(apartment.price)}
+                    </p>
+                    <p className={styles.priceMeta}>
+                      {pricePerSquareMeter
+                        ? `${formatPrice(pricePerSquareMeter)} за м²`
+                        : "Цена за м² появится после получения полной площади"}
+                    </p>
+                  </div>
+
+                  <div className={styles.actionGroup}>
+                    <Button fullWidth size="lg">
+                      Связаться по объявлению
+                    </Button>
+                    <Button
+                      fullWidth
+                      size="lg"
+                      variant={isFavorite ? "primary" : "secondary"}
+                      onClick={handleFavoriteClick}
+                    >
+                      {isFavorite ? "В избранном" : "Сохранить в избранное"}
+                    </Button>
+                  </div>
+
+                  <div className={styles.locationBlock}>
+                    <p className={styles.locationLabel}>Адрес</p>
+                    <p className={styles.locationValue}>{apartment.address}</p>
+                    <p className={styles.metro}>
+                      {formatMetro(
+                        apartment.nearestMetro,
+                        apartment.minutesToMetro,
+                      )}
+                    </p>
+                  </div>
+
+                  {badges.length > 0 && (
+                    <div className={styles.badges}>
+                      {badges.map((badge) => (
+                        <span key={badge} className={styles.badge}>
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {apartment.createdAt && (
+                    <p className={styles.publishDate}>
+                      Опубликовано{" "}
+                      {dateFormatter.format(new Date(apartment.createdAt))}
+                    </p>
+                  )}
+                </aside>
+              </section>
+
+              <section className={styles.infoGrid}>
+                <div className={styles.mainInfo}>
+                  <div className={styles.titleBlock}>
+                    <h1 className={styles.title}>{apartment.title}</h1>
+                    <p className={styles.subtitle}>
+                      {apartment.district
+                        ? `${apartment.district} район`
+                        : "Район не указан"}
+                    </p>
+                  </div>
+
+                  <div className={styles.specGrid}>
+                    {details.map((item) => (
+                      <div key={item.label} className={styles.specCard}>
+                        <p className={styles.specLabel}>{item.label}</p>
+                        <p className={styles.specValue}>{item.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.descriptionCard}>
+                  <h2 className={styles.sectionTitle}>Описание</h2>
+                  <p className={styles.description}>
+                    {apartment.description?.trim() ||
+                      "Описание пока не добавлено, но основные характеристики квартиры уже доступны выше."}
+                  </p>
+                </div>
+
+                <div className={styles.descriptionCard}>
+                  <h2 className={styles.sectionTitle}>Инфраструктура</h2>
+                  <p className={styles.description}>
+                    {infrastructure.length
+                      ? infrastructure.join(", ")
+                      : "Инфраструктура района пока не заполнена."}
+                  </p>
+                </div>
+
+                <div className={styles.mapCard}>
+                  <div className={styles.mapHeader}>
+                    <h2 className={styles.sectionTitle}>Местоположение</h2>
+                    <a
+                      className={styles.mapLink}
+                      href={mapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Открыть в Яндекс.Картах
+                    </a>
+                  </div>
+                  <iframe
+                    className={styles.mapFrame}
+                    src={mapEmbedUrl}
+                    title={`Карта: ${apartment.title}`}
+                    loading="lazy"
+                  />
+                </div>
+              </section>
+            </>
+          )}
+        </section>
+      </Container>
+    </div>
+  );
+};
+
+export default Flat;

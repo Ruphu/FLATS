@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AuthForm from '@components/AuthForm'
 import { AUTH_ERROR_MESSAGES } from '@constants/api_errors'
@@ -11,10 +11,12 @@ const Register = () => {
 	const { isAuthenticated } = useAuth()
 	const navigate = useNavigate()
 	const registerMutation = useRegister()
-	const errorMessage = registerMutation.isError
+	const [clientErrorMessage, setClientErrorMessage] = useState('')
+	const serverErrorMessage = registerMutation.isError
 		? AUTH_ERROR_MESSAGES[registerMutation.error?.status] ??
 			AUTH_ERROR_MESSAGES.default
 		: ''
+	const errorMessage = clientErrorMessage || serverErrorMessage
 
 	useEffect(() => {
 		if (isAuthenticated) {
@@ -23,6 +25,12 @@ const Register = () => {
 	}, [isAuthenticated, navigate])
 
 	const handleSubmit = async values => {
+		if (values.name.trim().length < 2) {
+			setClientErrorMessage('Имя должно содержать минимум 2 символа')
+			return
+		}
+
+		setClientErrorMessage('')
 		await registerMutation.mutateAsync(values)
 		navigate('/profile', { replace: true })
 	}
